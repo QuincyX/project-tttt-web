@@ -2,7 +2,6 @@
 .monacoContainer
   .monacoEditor(ref="codeEditor")
 
-
 </template>
 
 <script lang="ts">

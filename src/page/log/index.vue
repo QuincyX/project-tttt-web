@@ -12,14 +12,7 @@
       el-form-item(label="belongType")
         el-select(v-model="filter.belongType")
           el-option(value="") 全部
-          el-option(value="job")
-          el-option(value="story")
-          el-option(value="case")
-          el-option(value="action")
-          el-option(value="http")
-          el-option(value="rule")
-          el-option(value="output")
-          el-option(value="sys")
+          el-option(v-for="i in ['job','story','case','action','http','rule','output','sys']" :key="i" :value="i")
       el-form-item(label="belongTo")
         el-input(v-model="filter.belongTo")
     el-form(label-width="5em")
@@ -51,6 +44,8 @@
       el-table-column(label="belongType" prop="belongType")
       el-table-column(label="belongTo" prop="belongTo")
       el-table-column(label="createAt" prop="createAt")
+        template(v-slot="scoped")
+          span {{scoped.row.createAt | formatLastDate}}
 
 </template>
 
