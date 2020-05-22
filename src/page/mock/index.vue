@@ -63,9 +63,7 @@ export default class extends Vue {
   }
   filter = {
     type: '',
-    job: '',
-    belongType: '',
-    belongTo: ''
+    target: ''
   }
   handleDeleteMockListItem(item: any, index: number) {
     this.$confirm(

@@ -71,9 +71,10 @@ export default class extends Vue {
     total: 100
   }
   filter = {
+    status: '',
+    story: '',
+    trigger: '',
     type: '',
-    job: '',
-    belongType: '',
     belongTo: ''
   }
   handleDelete(item: any) {
