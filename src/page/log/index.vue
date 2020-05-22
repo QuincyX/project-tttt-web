@@ -1,17 +1,30 @@
 <template lang="pug">
 .page.cardList
   el-card
-    el-form(inline label-width="5em")
+    el-form(inline label-width="7em")
       el-form-item(label="type")
         el-select(v-model="filter.type")
           el-option(value="") 全部
           el-option(value="success")
           el-option(value="error")
-      el-form-item(label="job")
+      el-form-item(label="jobId")
         el-input(v-model="filter.job")
+      el-form-item(label="belongType")
+        el-select(v-model="filter.belongType")
+          el-option(value="") 全部
+          el-option(value="job")
+          el-option(value="story")
+          el-option(value="case")
+          el-option(value="action")
+          el-option(value="http")
+          el-option(value="rule")
+          el-option(value="output")
+          el-option(value="sys")
+      el-form-item(label="belongTo")
+        el-input(v-model="filter.belongTo")
     el-form(label-width="5em")
       el-form-item
-        el-button(type="primary") search
+        el-button(type="primary" @click="handleSearch") search
 
   el-card.fullCard
     el-pagination(
@@ -26,7 +39,12 @@
       @current-change="handleCurrentChange"
     )
     el-table(:data="list")
-      el-table-column(label="ID" prop="_id")
+      el-table-column(type="expand")
+        template(v-slot="scoped")
+          el-form(label-width="7em")
+            el-form-item(label="id") {{scoped.row._id}}
+            el-form-item(label="content") {{scoped.row.content}}
+
       el-table-column(label="type" prop="type")
       el-table-column(label="title" prop="title")
       el-table-column(label="job" prop="job")
@@ -50,7 +68,15 @@ export default class extends Vue {
     total: 100
   }
   filter = {
-    type: ''
+    type: '',
+    job: '',
+    belongType: '',
+    belongTo: ''
+  }
+  handleSearch() {
+    this.page.page = 1
+    this.page.size = 10
+    this.getList()
   }
   handleSizeChange(val: number) {
     this.page.size = val
@@ -64,7 +90,7 @@ export default class extends Vue {
   getList() {
     this.$http
       .get('/log', {
-        params: { ...this.page }
+        params: { ...this.page, ...this.filter }
       })
       .then(({ page, list }: any) => {
         this.page = page
