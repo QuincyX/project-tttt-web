@@ -1,0 +1,50 @@
+.inline {
+  display: inline-block;
+}
+
+.border(@color: @border) {
+  border: 1px solid @color;
+}
+.borderBottom(@color: @border) {
+  border-bottom: 1px solid @color;
+}
+
+.square(@width, @height: @width) {
+  width: @width;
+  height: @height;
+}
+
+.rounded(@size) {
+  width: @size;
+  height: @size;
+  border-radius: 50%;
+}
+.vTop {
+  vertical-align: top;
+}
+
+.flexCenter {
+  display: flex;
+  justify-content: center;
+  align-items: center;
+}
+.size(@size) {
+  font-size: @size;
+}
+.bold {
+  font-weight: bold;
+}
+
+.padding(@size: @gutter) {
+  padding: @size;
+}
+
+.margin(@size: @gutter) {
+  margin: @size;
+}
+.marginBottom(@size: @gutter) {
+  margin-bottom: @size;
+}
+.marginRight(@size: @gutter) {
+  margin-bottom: @size;
+}

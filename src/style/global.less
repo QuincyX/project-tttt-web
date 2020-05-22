@@ -1,0 +1,27 @@
+body {
+  background: @background;
+}
+.page {
+  .padding;
+  .el-card {
+    .marginBottom;
+    .el-pagination {
+      text-align: right;
+    }
+    &:last-child {
+      .marginBottom(0);
+    }
+  }
+}
+.cardList {
+  display: flex;
+  flex-direction: column;
+  justify-content: flex-start;
+  height: calc(100vh - 61px);
+  .el-card {
+    flex-shrink: 0;
+  }
+  .fullCard {
+    flex-grow: 1;
+  }
+}

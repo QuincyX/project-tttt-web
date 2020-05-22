@@ -7,7 +7,7 @@ module.exports = {
     },
     'style-resources-loader': {
       preProcessor: 'less',
-      patterns: [],
+      patterns: ['./src/style/theme.less', './src/style/mixin.less'],
     },
   },
 }

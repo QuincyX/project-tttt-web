@@ -1,6 +1,7 @@
 <template lang="pug">
-#app
-  router-view
+.page
+  p this is a default page
+
 
 </template>
 
@@ -8,14 +9,13 @@
 import { Vue, Component } from 'vue-property-decorator'
 
 @Component({
-  components: {},
+  components: { }
 })
-export default class AppHome extends Vue {
+export default class extends Vue {
   mounted(): void {}
 }
 </script>
 
-<style lang="less">
-@import './style/reset.less';
-@import './style/global.less';
+<style lang="less" scoped>
+
 </style>

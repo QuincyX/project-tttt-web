@@ -9,33 +9,14 @@ import router from '@/plugin/router'
 const instance = axios.create({
   timeout: 20 * 1000,
   withCredentials: false,
+  baseURL: 'http://127.0.0.1:3001/'
 })
 
 instance.interceptors.request.use(
   (config: AxiosRequestConfig) => {
     if (config.params) {
-      delete config.params.finished
+      delete config.params.total
     }
-    if (config.data) {
-      delete config.data.finished
-    }
-    // 自动处理URL
-    if (config.url && config.url.substring(0, 4) !== 'http') {
-      if (config.url.substring(0, 1) === '/') {
-        config.url = config.url.substring(1, config.url.length)
-      }
-      if (config.url.split('/')[0].includes('-api')) {
-        config.url = process.env.VUE_APP_BASE_API_URL + config.url
-      } else {
-        config.url =
-          process.env.VUE_APP_BASE_API_URL + 'major-api/' + config.url
-      }
-    }
-    // 请求携带自定义token
-    if (localStorage.getItem('token')) {
-      config.headers['jwt-token'] = localStorage.getItem('token')
-    }
-    config.headers['driver'] = 'web'
     return config
   },
   (error) => {
@@ -64,52 +45,22 @@ instance.interceptors.response.use(
         store.dispatch('notification/push', {
           code: response.data.code,
           message: response.data.message || '',
-          button: '我要申诉',
+          button: '我要申诉'
         })
       }
       // 返回错误处理
       printError(response)
       return Promise.reject(response.data)
     } else {
-      // 返回成功处理
-      if (response.headers['jwt-token']) {
-        // 自动刷新token
-        localStorage.setItem('token', response.headers['jwt-token'])
-      }
-      if (response.data.data && response.data.data.list) {
+      if (response?.data?.data?.page && response?.data?.data?.list) {
         // 如果返回数据是分页列表
-        // 分页信息再包装，添加 finished 判断
-        // response.data.data.list.length < response.config.params.count
-        const finished = response.data.data.hasNext != 1
-        let count = 0
-        let size = 0
-        if (response.config.method === 'post') {
-          const requestData = JSON.parse(response.config.data)
-          count = requestData.count
-          size = requestData.size
-        } else {
-          count = response.config.params.count
-          size = response.config.params.size
+        const page: PageQuery = {
+          ...response.data.data.page
         }
-        const page = {
-          page: response.data.data.page,
-          timeline: response.data.data.timeline,
-          count,
-          size,
-          finished,
-        }
-        if (!response.data.data.page) {
-          delete page.page
-        }
-        if (!size) {
-          delete page.size
-        }
-        const result = response.data.data
         printList(response, page)
         return Promise.resolve({
           list: response.data.data.list,
-          result,
-          page,
+          page
         })
       } else {
         // 默认返回数据是对象
@@ -124,7 +75,7 @@ instance.interceptors.response.use(
       stack: error.stack,
       url: error.config ? error.config.url : '',
       method: error.config ? error.config.method : '',
-      time: Date.now(),
+      time: Date.now()
     })
     if (!isDev && error.response?.status && error.response?.status >= 500) {
       router.push('/redirect/serverError')
@@ -188,7 +139,7 @@ const rainbow = [
   'color: #1abc9c',
   'color: #3498db',
   'color: #9b59b6',
-  'color: #333',
+  'color: #333'
 ]
 const printErrorCode = (val: any) => {
   if (val) {
