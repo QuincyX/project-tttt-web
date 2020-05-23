@@ -18,18 +18,31 @@
           .list
             .item(v-for="(i,n) in apiList" :key="n" :class="{active:(currentApiId===i._id)}" @click="handleChangeApi(i)") {{i.name}}
 
-  el-card
-    p this is a default page
-    p {{apiDetail}}
-
+  el-card(v-if="apiDetail._id")
+    div(slot="header")
+      .cardHeader {{apiDetail._id}}
+      el-button.headerRightButton(type="success") Submit
+    el-form(label-width="8em" size="medium")
+      el-form-item(label="name") {{apiDetail.name}}
+      el-form-item(label="description" v-if="apiDetail.description") {{apiDetail.description}}
+      el-form-item(label="url" inline) {{apiDetail.method}} http://{{baseUrl}}{{apiDetail.url}}
+      el-form-item(label="query" v-if="apiDetail.query.length")
+        paramItem(v-for="(i,n) in apiDetail.query" :key="n" :detail="i")
+      el-form-item(label="body" v-if="apiDetail.body.length")
+        paramItem(v-for="(i,n) in apiDetail.body" :key="n" :detail="i")
+      el-form-item(label="path" v-if="apiDetail.path.length")
+        paramItem(v-for="(i,n) in apiDetail.path" :key="n" :detail="i")
+      el-form-item(label="header" v-if="apiDetail.header.length")
+        paramItem(v-for="(i,n) in apiDetail.header" :key="n" :detail="i")
 
 </template>
 
 <script lang="ts">
 import { Vue, Component } from 'vue-property-decorator'
+import paramItem from '@/component/action/paramItem.vue'
 
 @Component({
-  components: {}
+  components: { paramItem }
 })
 export default class extends Vue {
   projectList: any[] = []
@@ -48,6 +61,12 @@ export default class extends Vue {
     path: [],
     body: [],
     header: []
+  }
+  get baseUrl(): string {
+    const currentProject = this.projectList.find(
+      (o) => o._id === this.currentProjectId
+    )
+    return currentProject.host
   }
   handleChangeProject(item: any) {
     this.currentProjectId = item._id
