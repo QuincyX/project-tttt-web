@@ -11,7 +11,7 @@
     el-form(label-width="5em")
       el-form-item
         el-button(type="primary" icon="el-icon-search" @click="handleSearch") search
-        el-button(type="success" icon="el-icon-plus" @click="handleSearch") add
+        el-button(type="success" icon="el-icon-plus" @click="handleAdd") add
 
   el-card.fullCard
     el-pagination(
@@ -43,8 +43,25 @@
           span {{scoped.row.createAt | formatLastDate}}
       el-table-column(label="操作" width="120")
         template(v-slot="scoped")
-          el-button(type="warning" icon="el-icon-edit" circle)
+          el-button(type="warning" icon="el-icon-edit" circle @click="handleEdit(scoped.row)")
           el-button(type="danger" icon="el-icon-delete" circle @click="handleDelete(scoped.row)")
+
+  el-dialog(:title="editDialogData._id?'编辑':'添加'" :visible.sync="isShowEditDialog")
+    el-form(label-width="6em")
+      el-form-item(label="id" v-if="editDialogData._id")
+        el-input(v-model="editDialogData._id" disabled)
+      el-form-item(label="name")
+        el-input(v-model="editDialogData.name")
+      el-form-item(label="描述")
+        el-input(v-model="editDialogData.description")
+      el-form-item(label="type")
+        el-select(v-model="editDialogData.type")
+          el-option(v-for="i in ['global', 'job', 'story', 'case', 'action']" :key="i" :value="i")
+      el-form-item(label="targetId")
+        el-input(v-model="editDialogData.target")
+    div(slot="footer")
+      el-button(type="default" @click="isShowEditDialog=false") 取消
+      el-button(type="primary" @click="handleSubmitDialog") 确定
 
 </template>
 
@@ -64,6 +81,49 @@ export default class extends Vue {
   filter = {
     type: '',
     target: ''
+  }
+  isShowEditDialog: boolean = false
+  editDialogData: any = {
+    _id: '',
+    name: '',
+    description: '',
+    type: '',
+    target: ''
+  }
+  handleSubmitDialog() {
+    if (this.editDialogData._id) {
+      this.$http
+        .put(`/mock/${this.editDialogData._id}`, {
+          ...this.editDialogData
+        })
+        .then((res) => {
+          this.isShowEditDialog = false
+          this.getList()
+        })
+    } else {
+      this.$http
+        .post(`/mock`, {
+          ...this.editDialogData
+        })
+        .then((res) => {
+          this.isShowEditDialog = false
+          this.getList()
+        })
+    }
+  }
+  handleAdd() {
+    this.editDialogData = {
+      _id: '',
+      name: '',
+      description: '',
+      type: '',
+      target: ''
+    }
+    this.isShowEditDialog = true
+  }
+  handleEdit(item: any) {
+    this.editDialogData = { ...item }
+    this.isShowEditDialog = true
   }
   handleDeleteMockListItem(item: any, index: number) {
     this.$confirm(

@@ -3,16 +3,36 @@ Write your variables here. All available variables can be
 found in element-ui/packages/theme-chalk/src/common/var.scss.
 For example, to overwrite the theme color:
 */
-$--color-primary: #372963;
+// $--color-primary: #372963;
+$--color-primary: #c592ff;
 $--color-success: #00ff9c;
-$--color-warning: #e6a23c;
+$--color-warning: #fffc58;
 $--color-danger: #ff4081;
 $--color-info: #c592ff;
-$--color-text-primary: #100d23;
-$--color-black: #100d23;
+$--color-blue: #00b0ff;
+$--color-text-primary: #00ff9c;
+
+$--color-black: #c592ff;
+$--color-white: #372963;
+// #100d23
 
 // $--card-border-color :#c592ff;
 $--card-border-color: rgba(197, 146, 255, 0.3);
+$--border-color-base: rgba(197, 146, 255, 0.7);
+$--border-color-light: rgba(197, 146, 255, 0.5);
+$--border-color-lighter: rgba(197, 146, 255, 0.3);
+$--color-text-regular: #c592ff;
+$--color-text-secondary: #00b0ff;
+$--background-color-base: #100d23;
+
+$--select-option-color: #00ff9c;
+$--select-dropdown-background: #012113;
+$--select-dropdown-border: solid 1px #00ff9c;
+$--select-option-selected-font-color: #00b0ff;
+
+$--input-font-color: #00ff9c;
+$--input-border: solid 1px #00ff9c;
+$--input-background-color: #012113;
 
 /* icon font path, required */
 $--font-path: '~element-ui/lib/theme-chalk/fonts';
