@@ -14,7 +14,8 @@
           el-option(v-for="i in ['true','false']" :key="i" :value="i")
     el-form(label-width="5em")
       el-form-item
-        el-button(type="primary" @click="handleSearch") search
+        el-button(type="primary" icon="el-icon-search" @click="handleSearch") search
+        el-button(type="success" icon="el-icon-plus" @click="$router.push('/actionManage/action/add')") add
 
   el-card.fullCard
     el-pagination(

@@ -1,12 +1,18 @@
 .inline {
   display: inline-block;
 }
+.center {
+  text-align: center;
+}
 
 .border(@color: @border) {
   border: 1px solid @color;
 }
 .borderBottom(@color: @border) {
   border-bottom: 1px solid @color;
+}
+.borderNone() {
+  border: none;
 }
 
 .square(@width, @height: @width) {
@@ -47,4 +53,10 @@
 }
 .marginRight(@size: @gutter) {
   margin-bottom: @size;
+}
+.trans(@time:0.3s) {
+  transition: all ease @time;
+}
+.pointer() {
+  cursor: pointer;
 }

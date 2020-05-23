@@ -65,7 +65,9 @@ instance.interceptors.response.use(
       } else {
         // 默认返回数据是对象
         printData(response)
-        return Promise.resolve(response.data.data || response.data)
+        return Promise.resolve(
+          response.data?.list || response.data?.data || response.data
+        )
       }
     }
   },
