@@ -35,33 +35,13 @@
         template(v-slot="scoped")
           el-form(label-width="10em")
             el-form-item(v-if="scoped.row.body.length" label="body")
-              div.flex
-                div.item(v-for="item in scoped.row.body")
-                  p default：{{item.default}}
-                  p name：{{item.name}}
-                  p id：{{item._id}}
-                  p required：{{item.required}}
+              paramItem(v-for="(i,n) in scoped.row.body" :key="n" :detail="i")
             el-form-item(label="header")
-              div.flex
-                div.item(v-for="item in scoped.row.header")
-                  p default：{{item.default}}
-                  p name：{{item.name}}
-                  p id：{{item._id}}
-                  p required：{{item.required}}
+              paramItem(v-for="(i,n) in scoped.row.header" :key="n" :detail="i")
             el-form-item(v-if="scoped.row.path.length" label="path")
-              div.flex
-                div.item(v-for="item in scoped.row.path")
-                  p default：{{item.default}}
-                  p name：{{item.name}}
-                  p id：{{item._id}}
-                  p required：{{item.required}}
+              paramItem(v-for="(i,n) in scoped.row.path" :key="n" :detail="i")
             el-form-item(v-if="scoped.row.query.length" label="query")
-              div.flex
-                div.item(v-for="item in scoped.row.query")
-                  p default：{{item.default}}
-                  p name：{{item.name}}
-                  p id：{{item._id}}
-                  p required：{{item.required}}
+              paramItem(v-for="(i,n) in scoped.row.query" :key="n" :detail="i")
       el-table-column(label="name" prop="name")
       el-table-column(label="url" prop="url")
       el-table-column(label="method" prop="method")
@@ -70,15 +50,22 @@
       el-table-column(label="apiGroup" prop="apiGroup")
       el-table-column(label="project" prop="project")
       el-table-column(label="isEnable" prop="isEnable")
+        template(v-slot="scoped")
+          div {{scoped.row.isEnable? 'true': 'false'}}
       el-table-column(label="createAt" prop="createAt")
-
+      el-table-column(label="操作" width="120")
+        template(v-slot="scoped")
+          el-button(type="warning" icon="el-icon-edit" circle @click="$router.push(`/apiManage/api/edit/${scoped.row._id}`)")
+          el-button(type="danger" icon="el-icon-delete" circle @click="handleDelete(scoped.row)")
 </template>
 
 <script lang="ts">
 import { Vue, Component } from 'vue-property-decorator'
-
+import paramItem from '@/component/action/paramItem.vue'
 @Component({
-  components: {}
+  components: {
+    paramItem
+  }
 })
 export default class extends Vue {
   list = []
@@ -94,6 +81,17 @@ export default class extends Vue {
     project: '',
     isEnable: ''
   }
+  isShowEditDialog: boolean = false
+  editDialogData: any = {
+    url: '',
+    name: '',
+    id: '',
+    method: '',
+    apiGroup: '',
+    project: '',
+    host: '',
+    type: ''
+  }
   handleSearch() {
     this.page.page = 1
     this.page.size = 10
@@ -107,6 +105,10 @@ export default class extends Vue {
   handleCurrentChange(val: number) {
     this.page.page = val
     this.getList()
+  }
+ handleEdit(item: any) {
+    this.editDialogData = { ...item }
+    this.isShowEditDialog = true
   }
   getList() {
     this.$http

@@ -35,10 +35,11 @@
       el-table-column(label="host" prop="host")
       el-table-column(label="basePath" prop="basePath")
       el-table-column(label="createAt" prop="createAt")
-      el-table-column(label="操作" width="120")
+      el-table-column(label="操作" width="190")
         template(v-slot="scoped")
           el-button(type="warning" icon="el-icon-edit" circle @click="handleEdit(scoped.row)")
           el-button(type="danger" icon="el-icon-delete" circle @click="handleDelete(scoped.row)")
+          el-button(type="plain" size="mini" round @click="handleAddGroup(scoped.row)") 添加分组
 
   el-dialog(:title="'添加'" :visible.sync="isShowAddDialog")
     el-form(label-width="6em")
@@ -62,6 +63,17 @@
       el-button(type="default" @click="isShowEditDialog=false") 取消
       el-button(type="primary" @click="handleSubmitEditDialog") 确定
 
+  el-dialog(:title="'添加分组'" :visible.sync="isShowAddGroupDialog")
+    el-form(label-width="6em")
+      el-form-item(label="name")
+        el-input(v-model="addGroupDialogData.name")
+      el-form-item(label="描述")
+        el-input(v-model="addGroupDialogData.description")
+      el-form-item(label="project")
+        el-input(v-model="addGroupDialogData.project" disabled)
+    div(slot="footer")
+      el-button(type="default" @click="isShowAddGroupDialog=false") 取消
+      el-button(type="primary" @click="submitAddGroupDialog") 确定
 </template>
 
 <script lang="ts">
@@ -93,9 +105,15 @@ export default class extends Vue {
   editDialogData = {
     url: '',
     name: '',
-    id: '',
+    _id: '',
     host: '',
     type: ''
+  }
+  isShowAddGroupDialog: boolean = false
+  addGroupDialogData = {
+    name: '',
+    description: '',
+    project: ''
   }
   handleSearch() {
     this.page.page = 1
@@ -146,7 +164,19 @@ export default class extends Vue {
         })
       })
   }
-
+  handleAddGroup(projectItem: any) {
+    this.isShowAddGroupDialog = true
+    this.addGroupDialogData.project = projectItem._id
+  }
+  submitAddGroupDialog() {
+    this.$http.post(`/apiGroup`,{
+      ...this.addGroupDialogData
+    })
+    .then(res => {
+      this.isShowAddGroupDialog = false
+      this.$router.push(`/apiManage/group?project=${this.addGroupDialogData.project}`)
+    })
+  }
   handleSizeChange(val: number) {
     this.page.size = val
     this.page.page = 1
