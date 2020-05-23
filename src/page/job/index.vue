@@ -85,11 +85,12 @@ export default class extends Vue {
       .then(() => {
         return this.$http.delete(`/job/${item._id}`)
       })
-      .then(() => {
+      .then(({ message }: any) => {
         this.$message({
           type: 'success',
-          message: '删除成功!'
+          message
         })
+        this.getList()
       })
   }
   handleSearch() {

@@ -35,7 +35,7 @@
       el-form-item(label="Path" v-if="actionDetail.path.length")
         paramItem(v-for="(i,n) in actionDetail.path" :key="n" :detail="i")
       el-form-item(label="Header" v-if="actionDetail.header.length")
-        paramItem(v-for="(i,n) in actionDetail.header" :key="n" :detail="i")
+        paramItem(v-for="(i,n) in actionDetail.header" :key="n" :detail="i" @click="handleAddHeaderMock(i)")
       el-form-item(label="验证规则")
         el-button(v-for="(i,n) in actionDetail.rule" :key="n" type="success" @click="handleDeleteRule(n)") {{i.name}}
         el-button(type="success" icon="el-icon-plus" @click="handleAddRule")
@@ -67,6 +67,10 @@
     div(slot="footer")
       el-button(type="default" @click="isShowAddOutputDialog=false") 取消
       el-button(type="primary" @click="handleSubmitAddOutput") 确定
+
+  el-dialog(title="选择数据定义" :visible.sync="isShowMockPickDialog")
+    .mockList
+      .item(v-for="(i,n) in mockList" :key="n") {{i}}
 
 
 </template>
@@ -122,11 +126,16 @@ export default class extends Vue {
   ruleList: any[] = []
   isShowAddRuleDialog: boolean = false
   isShowAddOutputDialog: boolean = false
+  mockList: any[] = []
+  isShowMockPickDialog: boolean = false
   get baseUrl(): string {
     const currentProject = this.projectList.find(
       (o) => o._id === this.currentProjectId
     )
     return currentProject.host
+  }
+  handleAddHeaderMock(item:any){
+    console.log('>>>>>>>> ',item)
   }
   handleSubmitAddAction() {
     this.$http.post('/action', this.actionDetail).then(() => {

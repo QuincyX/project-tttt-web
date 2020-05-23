@@ -32,27 +32,41 @@
     el-table(:data="list")
       el-table-column(type="expand")
         template(v-slot="scoped")
-          el-form(label-width="7em")
-            el-form-item(label="id") {{scoped.row._id}}
-            el-form-item(label="body") {{scoped.row.body}}
-            el-form-item(label="output")
-              div(v-for="obj in scoped.row.output")
-                span name : {{obj.name}}
-                span source : {{obj.source}}
+          el-form(label-width="6em")
+            el-form-item(label="output" v-if="scoped.row.output.length")
+              div(v-for="(obj,index) in scoped.row.output" :key="index")
+                span(style="margin-right:2em") name : {{obj.name}}
+                span(style="margin-right:2em") source : {{obj.source}}
+                span(style="margin-right:2em") targetType : {{obj.targetType}}
                 span target : {{obj.target}}
-            el-form-item(label="header")
-              div(v-for="item in scoped.row.header")
-                span mock : {{item.mock}}
+            el-form-item(label="rule" v-if="scoped.row.rule.length")
+              div(v-for="(obj,index) in scoped.row.rule" :key="index")
+                span(style="margin-right:2em") name : {{obj.name}}
+                span rule : {{obj.rule}}
+            el-form-item(label="header" v-if="scoped.row.header.length")
+              div(v-for="(item,index) in scoped.row.header" :key="index")
+                span(style="margin-right:2em") mock : {{item.mock}}
+                span name : {{item.name}}
+            el-form-item(label="body" v-if="scoped.row.body.length")
+              div(v-for="(item,index) in scoped.row.body" :key="index")
+                span(style="margin-right:2em") mock : {{item.mock}}
+                span name : {{item.name}}
+            el-form-item(label="query" v-if="scoped.row.query.length")
+              div(v-for="(item,index) in scoped.row.query" :key="index")
+                span(style="margin-right:2em") mock : {{item.mock}}
+                span name : {{item.name}}
+            el-form-item(label="path" v-if="scoped.row.path.length")
+              div(v-for="(item,index) in scoped.row.path" :key="index")
+                span(style="margin-right:2em") mock : {{item.mock}}
                 span name : {{item.name}}
       el-table-column(label="id" prop="_id")
       el-table-column(label="name" prop="name")
       el-table-column(label="description" prop="description")
       el-table-column(label="api" prop="api")
-      el-table-column(label="query" prop="query")
-      el-table-column(label="path" prop="path")
-      el-table-column(label="type" prop="type")
-      el-table-column(label="rule" prop="rule")
       el-table-column(label="isEnable" prop="isEnable")
+        template(v-slot="scoped")
+          el-button(v-if="scoped.row.isEnable" type="success" size="mini") 正常
+          el-button(v-else type="danger" size="mini") 禁用
       el-table-column(label="createAt" prop="createAt")
         template(v-slot="scoped")
           span {{scoped.row.createAt | formatLastDate}}

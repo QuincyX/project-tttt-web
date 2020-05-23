@@ -36,9 +36,11 @@
         template(v-slot="scoped")
           el-form(label-width="7em")
             el-form-item(label="id") {{scoped.row._id}}
-            el-form-item(label="content") {{scoped.row.content}}
-
+            el-form-item(label="content" v-if="scoped.row.content") {{scoped.row.content}}
       el-table-column(label="type" prop="type")
+        template(v-slot="scoped")
+          el-button(v-if="scoped.row.type==='success'" type="success" size="mini") Success
+          el-button(v-else-if="scoped.row.type==='error'" type="danger" size="mini") Error
       el-table-column(label="title" prop="title")
       el-table-column(label="job" prop="job")
       el-table-column(label="belongType" prop="belongType")

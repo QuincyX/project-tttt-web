@@ -39,8 +39,9 @@
       el-table-column(label="createAt" prop="createAt")
         template(v-slot="scoped")
           span {{scoped.row.createAt | formatLastDate}}
-      el-table-column(label="操作" width="120")
+      el-table-column(label="操作" width="140" align="center")
         template(v-slot="scoped")
+          el-button(type="success" icon="el-icon-magic-stick" circle @click="handleTriggerStory(scoped.row)")
           el-button(type="warning" icon="el-icon-edit" circle)
           el-button(type="danger" icon="el-icon-delete" circle @click="handleDelete(scoped.row)")
 
@@ -62,6 +63,20 @@ export default class extends Vue {
   filter = {
     type: '',
     name: ''
+  }
+  handleTriggerStory(item: any) {
+    this.$prompt('请输入任务备注', '提示', {
+      confirmButtonText: '确定',
+      cancelButtonText: '取消'
+    }).then(({ value }: any) => {
+      this.$http.post('/job', {
+        name: `【${item.name}】的执行任务`,
+        description: value,
+        story: item._id,
+        trigger: '手动',
+        type: '单次'
+      })
+    })
   }
   handleDelete(item: any) {
     this.$confirm('此操作将永久删除该数据, 是否继续?', '提示', {
