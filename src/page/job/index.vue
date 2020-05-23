@@ -50,8 +50,9 @@
       el-table-column(label="createAt" prop="createAt")
         template(v-slot="scoped")
           span {{scoped.row.createAt | formatLastDate}}
-      el-table-column(label="操作" width="120")
+      el-table-column(label="操作" width="140" align="center")
         template(v-slot="scoped")
+          el-button(type="success" icon="el-icon-view" circle @click="$router.push(`/log?job=${scoped.row._id}`)")
           el-button(type="warning" icon="el-icon-edit" circle)
           el-button(type="danger" icon="el-icon-delete" circle @click="handleDelete(scoped.row)")
 

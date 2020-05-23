@@ -93,6 +93,7 @@ export default class extends Vue {
       })
   }
   mounted(): void {
+    this.filter.job = <string>this.$route.query.job || ''
     this.getList()
   }
 }

@@ -76,7 +76,7 @@ export default class extends Vue {
     target: ''
   }
   isShowEditDialog: boolean = false
-  editDialogData: any = {
+  editDialogData = {
     _id: '',
     name: '',
     description: '',

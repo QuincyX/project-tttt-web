@@ -26,7 +26,7 @@
       @size-change="handleSizeChange"
       @current-change="handleCurrentChange"
     )
-    el-table(:data="list")  
+    el-table(:data="list")
       el-table-column(label="id" prop="_id")
       el-table-column(label="title" prop="title")
       el-table-column(label="type" prop="type")
@@ -47,7 +47,7 @@
     div(slot="footer")
       el-button(type="default" @click="isShowAddDialog=false") 取消
       el-button(type="primary" @click="handleSubmitDialog") 确定
-    
+
   el-dialog(:title="'编辑'" :visible.sync="isShowEditDialog")
     el-form(label-width="6em")
       el-form-item(label="id" v-if="editDialogData._id")
@@ -87,10 +87,10 @@ export default class extends Vue {
   }
   isShowAddDialog: boolean = false
   isShowEditDialog: boolean = false
-  addDialogData: any = {
+  addDialogData = {
     url: ''
   }
-  editDialogData: any = {
+  editDialogData = {
     url: '',
     name: '',
     id: '',
