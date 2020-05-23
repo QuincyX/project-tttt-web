@@ -31,12 +31,38 @@
       @current-change="handleCurrentChange"
     )
     el-table(:data="list")
+      el-table-column(type="expand")
+        template(v-slot="scoped")
+          el-form(label-width="10em")
+            el-form-item(v-if="scoped.row.body.length" label="body")
+              div.flex
+                div.item(v-for="item in scoped.row.body")
+                  p default：{{item.default}}
+                  p name：{{item.name}}
+                  p id：{{item._id}}
+                  p required：{{item.required}}
+            el-form-item(label="header")
+              div.flex
+                div.item(v-for="item in scoped.row.header")
+                  p default：{{item.default}}
+                  p name：{{item.name}}
+                  p id：{{item._id}}
+                  p required：{{item.required}}
+            el-form-item(v-if="scoped.row.path.length" label="path")
+              div.flex
+                div.item(v-for="item in scoped.row.path")
+                  p default：{{item.default}}
+                  p name：{{item.name}}
+                  p id：{{item._id}}
+                  p required：{{item.required}}
+            el-form-item(v-if="scoped.row.query.length" label="query")
+              div.flex
+                div.item(v-for="item in scoped.row.query")
+                  p default：{{item.default}}
+                  p name：{{item.name}}
+                  p id：{{item._id}}
+                  p required：{{item.required}}
       el-table-column(label="name" prop="name")
-      //- el-table-column(type="expand")
-      //-   template(v-slot="scoped")
-      //-     el-form(label-width="7em")
-      //-       el-form-item(label="id") {{scoped.row._id}}
-      //-       el-form-item(label="content") {{scoped.row.content}}
       el-table-column(label="url" prop="url")
       el-table-column(label="method" prop="method")
       el-table-column(label="description" prop="description")
@@ -98,4 +124,14 @@ export default class extends Vue {
 }
 </script>
 
-<style lang="less" scoped></style>
+<style lang="less" scoped>
+.flex{
+  display:flex;
+  .item{
+    padding:5px 10px;
+    border:1px solid #7b7575;
+    margin:5px 10px;
+    border-radius: 5px;
+  }
+}
+</style>
