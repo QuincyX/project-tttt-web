@@ -91,6 +91,7 @@ export default class extends Vue {
     url: ''
   }
   editDialogData = {
+    _id: '',
     url: '',
     name: '',
     id: '',
@@ -106,9 +107,8 @@ export default class extends Vue {
     this.isShowAddDialog = true
   }
   handleSubmitDialog() {
-    if(this.addDialogData.url) {
-      this.$http.post('/project',this.addDialogData)
-      .then( res => {
+    if (this.addDialogData.url) {
+      this.$http.post('/project', this.addDialogData).then((res) => {
         this.isShowAddDialog = false
         this.page.page = 1
         this.getList()
@@ -161,7 +161,7 @@ export default class extends Vue {
       .get('/project', {
         params: { ...this.page, ...this.filter }
       })
-      .then(({ page, list,...res }: any) => {
+      .then(({ page, list, ...res }: any) => {
         this.page = page
         this.list = list
       })
