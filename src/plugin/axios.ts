@@ -28,47 +28,22 @@ instance.interceptors.request.use(
 instance.interceptors.response.use(
   (response: AxiosResponse) => {
     const { config } = response
-    if (response.data.code === -11) {
-      log('token expired , response code -11')
-      store.dispatch('user/logout')
-      store.dispatch('user/visitorLogin')
-      return Promise.resolve({})
-    } else if (response.data.code && response.data.code !== '00000') {
-      const { url = '' } = config
-      if (
-        url.indexOf('/major-api/user/v1/homepage/') > -1 &&
-        (response.data.code === -215 ||
-          response.data.code === -214 ||
-          response.data.code === -207)
-      ) {
-      } else if (response.data.code === -215 || response.data.code === -214) {
-        store.dispatch('notification/push', {
-          code: response.data.code,
-          message: response.data.message || '',
-          button: '我要申诉'
-        })
+    if (response?.data?.page && response?.data?.list) {
+      // 如果返回数据是分页列表
+      const page: PageQuery = {
+        ...response.data.page
       }
-      // 返回错误处理
-      printError(response)
-      return Promise.reject(response.data)
+      printList(response, page)
+      return Promise.resolve({
+        list: response?.data?.list,
+        page
+      })
     } else {
-      if (response?.data?.data?.page && response?.data?.data?.list) {
-        // 如果返回数据是分页列表
-        const page: PageQuery = {
-          ...response.data.data.page
-        }
-        printList(response, page)
-        return Promise.resolve({
-          list: response.data.data.list,
-          page
-        })
-      } else {
-        // 默认返回数据是对象
-        printData(response)
-        return Promise.resolve(
-          response.data?.list || response.data?.data || response.data
-        )
-      }
+      // 默认返回数据是对象
+      printData(response)
+      return Promise.resolve(
+        response.data?.data || response.data?.list || response.data
+      )
     }
   },
   (error: AxiosError) => {
@@ -116,7 +91,7 @@ const printList = (response: any, page: any) => {
     if (page) {
       printRes('返回内容, page', page)
     }
-    printRes('返回内容, list', response.data.data.list)
+    printRes('返回内容, list', response.data.list)
     printMessage(response.data.message)
     console.groupEnd()
   }
