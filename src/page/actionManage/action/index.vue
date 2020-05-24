@@ -70,15 +70,15 @@
       el-table-column(label="createAt" prop="createAt")
         template(v-slot="scoped")
           span {{scoped.row.createAt | formatLastDate}}
-      el-table-column(label="操作" width="140")
+      el-table-column(label="操作" width="300")
         template(v-slot="scoped")
-          el-button(type="success" icon="el-icon-plus" circle @click="handleAddItemToCart(scoped.row)")
-          el-button(type="warning" icon="el-icon-edit" circle)
-          el-button(type="danger" icon="el-icon-delete" circle @click="handleDelete(scoped.row)")
+          el-button(type="success" icon="el-icon-check" @click="handleAddItemToCart(scoped.row)") 加入购物车
+          el-button(type="warning" icon="el-icon-edit") 编辑
+          el-button(type="danger" icon="el-icon-delete" @click="handleDelete(scoped.row)") 删除
 
   .floatButton
     el-button(type="success" icon="el-icon-shopping-cart-1" size="large" circle @click="isShowCartDialog=true")
-  el-drawer(title="已添加的动作列表" :visible.sync="isShowCartDialog")
+  el-drawer(title="已加入购物车的动作列表" :visible.sync="isShowCartDialog")
     .drawerContainer
       .drawerList
         .item(v-for="(i,n) in $store.getters['action/pickedList']" :key="n")

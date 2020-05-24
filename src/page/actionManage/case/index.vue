@@ -7,9 +7,9 @@
           el-option(value="") 全部
           el-option(value="true")
           el-option(value="false")
-      el-form-item(label="name")
+      el-form-item(label="名称")
         el-input(v-model="filter.name")
-      el-form-item(label="type")
+      el-form-item(label="类型")
         el-select(v-model="filter.type")
           el-option(value="") 全部
           el-option(v-for="i in ['单例','循环']" :key="i" :value="i")
@@ -61,10 +61,11 @@
       el-table-column(label="createAt" prop="createAt")
         template(v-slot="scoped")
           span {{scoped.row.createAt | formatLastDate}}
-      el-table-column(label="操作" width="120")
+      el-table-column(label="操作" width="300")
         template(v-slot="scoped")
-          el-button(type="warning" icon="el-icon-edit" circle @click="handleEdit(scoped.row)")
-          el-button(type="danger" icon="el-icon-delete" circle @click="handleDelete(scoped.row)")
+          el-button(type="success" icon="el-icon-check" @click="handleAddItemToCart(scoped.row)") 加入购物车
+          el-button(type="warning" icon="el-icon-edit" @click="handleEdit(scoped.row)") 编辑
+          el-button(type="danger" icon="el-icon-delete" @click="handleDelete(scoped.row)") 删除
 
   el-dialog(:title="editDialogData._id?'编辑':'添加'" :visible.sync="isShowEditDialog")
     el-form(label-width="6em")
@@ -75,7 +76,7 @@
       el-form-item(label="描述")
         el-input(v-model="editDialogData.description")
       el-form-item(label="actionList")
-        .actionList
+        .actionList(v-if="$store.getters['action/pickedList'].length")
           .item(v-for="(i,n) in $store.getters['action/pickedList']" :key="n")
             .name {{n+1}}. {{i.name}}
             .description 描述：{{i.description}}
@@ -93,9 +94,27 @@
                 el-button(type="warning" :disabled="n===0" icon="el-icon-top" size="mini" @click="$store.commit('action/moveUpPicked', i)")
                 el-button(type="warning" :disabled="n===$store.getters['action/pickedList'].length-1" icon="el-icon-bottom" size="mini" @click="$store.commit('action/moveDownPicked', i)")
               el-button.rightBtn(type="danger" icon="el-icon-delete" size="mini" @click="$store.commit('action/deletePicked', i)")
+        .actionList(v-else)
+          el-button(type="warning" @click="$router.push('/actionManage/action')") 先去选择动作
     div(slot="footer")
       el-button(type="default" @click="isShowEditDialog=false") 取消
       el-button(type="primary" @click="handleSubmitEditDialog") 确定
+
+  .floatButton
+    el-button(type="success" icon="el-icon-shopping-cart-1" size="large" circle @click="isShowCartDialog=true")
+  el-drawer(title="已加入购物车的用例列表" :visible.sync="isShowCartDialog")
+    .drawerContainer
+      .drawerList
+        .item(v-for="(i,n) in $store.getters['case/pickedList']" :key="n")
+          .name 【{{n+1}}】{{i.name}}
+          .description {{i.description}}
+          .actionBar
+            el-button-group
+              el-button(type="warning" :disabled="n===0" icon="el-icon-top" size="mini" @click="$store.commit('case/moveUpPicked', i)")
+              el-button(type="warning" :disabled="n===$store.getters['case/pickedList'].length-1" icon="el-icon-bottom" size="mini" @click="$store.commit('case/moveDownPicked', i)")
+            el-button.rightBtn(type="danger" icon="el-icon-delete" size="mini" @click="$store.commit('case/deletePicked', i)")
+      .extendContainer
+        el-button(type="success" @click="$router.push('/actionManage/story?action=add')") 生成故事
 
 </template>
 
@@ -125,6 +144,12 @@ export default class extends Vue {
     description: '',
     actionList: [],
     type: '单例'
+  }
+  isShowCartDialog: boolean = false
+
+  handleAddItemToCart(item: any) {
+    this.$store.commit('case/addPicked', item)
+    this.isShowCartDialog = true
   }
   handleAdd() {
     this.editDialogData._id = ''
@@ -213,7 +238,6 @@ export default class extends Vue {
   mounted(): void {
     this.getList()
     if (this.$route.query.action === 'add') {
-      this.editDialogData.actionList = this.$store.getters['action/pickedList']
       this.isShowEditDialog = true
     }
   }
