@@ -2,7 +2,7 @@ import Vue from 'vue'
 import Router, { RawLocation, Route } from 'vue-router'
 import routes from 'vue-auto-routing'
 import { createRouterLayout } from 'vue-router-layout'
-import store from '@/store'
+import store from '@/plugin/store'
 import { log } from '@/util/index'
 
 Vue.use(Router)

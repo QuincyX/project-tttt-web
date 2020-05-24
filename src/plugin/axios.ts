@@ -3,7 +3,7 @@
 import axios, { AxiosRequestConfig, AxiosResponse, AxiosError } from 'axios'
 const isDev = process.env.NODE_ENV === 'development'
 import { log } from '@/util/index'
-import store from '@/store/index'
+import store from '@/plugin/store'
 import router from '@/plugin/router'
 
 const instance = axios.create({
