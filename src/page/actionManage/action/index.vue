@@ -91,7 +91,7 @@
               el-button(type="warning" :disabled="n===$store.getters['action/pickedList'].length-1" icon="el-icon-bottom" size="mini" @click="$store.commit('action/moveDownPicked', i)")
             el-button.rightBtn(type="danger" icon="el-icon-delete" size="mini" @click="$store.commit('action/deletePicked', i)")
       .extendContainer
-        el-button(type="success") 生成测试用例
+        el-button(type="success" @click="$router.push('/actionManage/case?action=add')") 生成测试用例
 
 </template>
 

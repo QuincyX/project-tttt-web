@@ -17,7 +17,8 @@
         el-input(v-model="filter.description")
     el-form(label-width="5em")
       el-form-item
-        el-button(type="primary" @click="handleSearch") search
+        el-button(type="primary" icon="el-icon-search" @click="handleSearch") Search
+        el-button(type="success" icon="el-icon-plus" @click="handleAdd") Add
 
   el-card.fullCard
     el-pagination(
@@ -35,21 +36,66 @@
       el-table-column(type="expand")
         template(v-slot="scoped")
           el-form(label-width="7em")
-            el-form-item(label="id")
-              div(v-for="item in scoped.row.actionList")
-                p {{item}}
+            el-form-item(label="actionList")
+              .actionList.actionListInTable
+                .item(v-for="(i,n) in scoped.row.actionList" :key="n")
+                  .name {{n+1}}. {{i.name}}
+                  .description 描述：{{i.description}}
+                  .description 参数：
+                    el-button(type="warning" plain size="mini" v-if="i.body.length") body: {{i.body.length}}个
+                    el-button(type="warning" plain size="mini" v-if="i.query.length") query: {{i.query.length}}个
+                    el-button(type="warning" plain size="mini" v-if="i.path.length") path: {{i.path.length}}个
+                    el-button(type="warning" plain size="mini" v-if="i.header.length") header: {{i.header.length}}个
+                  .description 验证：
+                    el-button(type="warning" plain size="mini" v-for="(rule,ruleIndex) in i.rule" :key="ruleIndex") {{rule.name}}
+                  .description 输出：
+                    el-button(type="warning" plain size="mini" v-for="(output,outputIndex) in i.output" :key="outputIndex") {{output.name}}
       el-table-column(label="id" prop="_id")
       el-table-column(label="name" prop="name")
       el-table-column(label="description" prop="description")
-      el-table-column(label="isEnable" prop="isEnable")
       el-table-column(label="type" prop="type")
+      el-table-column(label="isEnable" prop="isEnable")
+        template(v-slot="scoped")
+          el-button(v-if="scoped.row.isEnable" size="mini" type="success" icon="el-icon-check")
+          el-button(v-else size="mini" type="warning" icon="el-icon-close")
       el-table-column(label="createAt" prop="createAt")
         template(v-slot="scoped")
           span {{scoped.row.createAt | formatLastDate}}
       el-table-column(label="操作" width="120")
         template(v-slot="scoped")
-          el-button(type="warning" icon="el-icon-edit" circle)
+          el-button(type="warning" icon="el-icon-edit" circle @click="handleEdit(scoped.row)")
           el-button(type="danger" icon="el-icon-delete" circle @click="handleDelete(scoped.row)")
+
+  el-dialog(:title="editDialogData._id?'编辑':'添加'" :visible.sync="isShowEditDialog")
+    el-form(label-width="6em")
+      el-form-item(label="id" v-if="editDialogData._id")
+        el-input(v-model="editDialogData._id" disabled)
+      el-form-item(label="name")
+        el-input(v-model="editDialogData.name")
+      el-form-item(label="描述")
+        el-input(v-model="editDialogData.description")
+      el-form-item(label="actionList")
+        .actionList
+          .item(v-for="(i,n) in $store.getters['action/pickedList']" :key="n")
+            .name {{n+1}}. {{i.name}}
+            .description 描述：{{i.description}}
+            .description 参数：
+              el-button(type="warning" plain size="mini" v-if="i.body.length") body: {{i.body.length}}个
+              el-button(type="warning" plain size="mini" v-if="i.query.length") query: {{i.query.length}}个
+              el-button(type="warning" plain size="mini" v-if="i.path.length") path: {{i.path.length}}个
+              el-button(type="warning" plain size="mini" v-if="i.header.length") header: {{i.header.length}}个
+            .description 验证：
+              el-button(type="warning" plain size="mini" v-for="(rule,ruleIndex) in i.rule" :key="ruleIndex") {{rule.name}}
+            .description 输出：
+              el-button(type="warning" plain size="mini" v-for="(output,outputIndex) in i.output" :key="outputIndex") {{output.name}}
+            .actionBar
+              el-button-group
+                el-button(type="warning" :disabled="n===0" icon="el-icon-top" size="mini" @click="$store.commit('action/moveUpPicked', i)")
+                el-button(type="warning" :disabled="n===$store.getters['action/pickedList'].length-1" icon="el-icon-bottom" size="mini" @click="$store.commit('action/moveDownPicked', i)")
+              el-button.rightBtn(type="danger" icon="el-icon-delete" size="mini" @click="$store.commit('action/deletePicked', i)")
+    div(slot="footer")
+      el-button(type="default" @click="isShowEditDialog=false") 取消
+      el-button(type="primary" @click="handleSubmitEditDialog") 确定
 
 </template>
 
@@ -71,6 +117,60 @@ export default class extends Vue {
     description: '',
     isEnable: '',
     type: ''
+  }
+  isShowEditDialog: boolean = false
+  editDialogData: any = {
+    _id: '',
+    name: '',
+    description: '',
+    actionList: [],
+    type: '单例'
+  }
+  handleAdd() {
+    this.editDialogData._id = ''
+    this.editDialogData.name = ''
+    this.editDialogData.description = ''
+    this.isShowEditDialog = true
+  }
+  handleEdit(item: any) {
+    this.editDialogData._id = item._id
+    this.editDialogData.name = item.name
+    this.editDialogData.description = item.description
+    this.$store.commit('action/setPickedList', item.actionList)
+    this.isShowEditDialog = true
+  }
+  handleSubmitEditDialog() {
+    if (this.editDialogData._id) {
+      this.$http
+        .put(`/case/${this.editDialogData._id}`, {
+          name: this.editDialogData.name,
+          description: this.editDialogData.description,
+          actionList: this.$store.getters['action/pickedList'].map(
+            (o: any) => o._id
+          ),
+          type: '单例'
+        })
+        .then((res) => {
+          this.$store.commit('action/clearPickedList')
+          this.isShowEditDialog = false
+          this.getList()
+        })
+    } else {
+      this.$http
+        .post('/case', {
+          name: this.editDialogData.name,
+          description: this.editDialogData.description,
+          actionList: this.$store.getters['action/pickedList'].map(
+            (o: any) => o._id
+          ),
+          type: '单例'
+        })
+        .then((res) => {
+          this.$store.commit('action/clearPickedList')
+          this.isShowEditDialog = false
+          this.getList()
+        })
+    }
   }
   handleDelete(item: any) {
     this.$confirm('此操作将永久删除该数据, 是否继续?', '提示', {
@@ -103,7 +203,7 @@ export default class extends Vue {
   getList() {
     this.$http
       .get('/case', {
-        params: { ...this.page, ...this.filter }
+        params: { ...this.page, ...this.filter, relate: true }
       })
       .then(({ page, list }: any) => {
         this.page = page
@@ -112,8 +212,56 @@ export default class extends Vue {
   }
   mounted(): void {
     this.getList()
+    if (this.$route.query.action === 'add') {
+      this.editDialogData.actionList = this.$store.getters['action/pickedList']
+      this.isShowEditDialog = true
+    }
   }
 }
 </script>
 
-<style lang="less" scoped></style>
+<style lang="less" scoped>
+.actionList {
+  .item {
+    .border(@green);
+    .marginBottom;
+    .radius;
+    .boxShadow(@green);
+    background: @black;
+    .name {
+      color: @green;
+      padding: 0 @gutter;
+      .size(@l);
+    }
+    .description {
+      color: @yellow;
+      padding: 0 @gutter;
+      .size(@s);
+    }
+    .actionBar {
+      padding: 3px @gutter;
+      display: flex;
+      justify-content: space-between;
+      .rightBtn {
+        display: none;
+      }
+    }
+    &:hover {
+      .actionBar {
+        .rightBtn {
+          display: block;
+        }
+      }
+    }
+  }
+}
+.actionListInTable {
+  display: flex;
+  flex-wrap: wrap;
+  .item {
+    flex-shrink: 0;
+    flex-basis: 400px;
+    .marginRight;
+  }
+}
+</style>

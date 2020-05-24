@@ -7,6 +7,8 @@ export default {
     pickedList: (state: any) => state.pickedList
   },
   mutations: {
+    setPickedList: (state: any, payload: any) => (state.pickedList = payload),
+    clearPickedList: (state: any) => (state.pickedList = []),
     addPicked: (state: any, payload: any) => state.pickedList.push(payload),
     deletePicked: (state: any, payload: any) => {
       const n = state.pickedList.findIndex((o: any) => o._id === payload._id)
