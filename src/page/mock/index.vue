@@ -83,7 +83,7 @@ export default class extends Vue {
     target: ''
   }
   isShowEditDialog: boolean = false
-  editDialogData = {
+  editDialogData: any = {
     _id: '',
     name: '',
     description: '',
@@ -196,6 +196,11 @@ export default class extends Vue {
   }
   mounted(): void {
     this.getList()
+    if (this.$route.query?.action === 'add') {
+      this.editDialogData.name = this.$route.query?.name
+      this.editDialogData.type = this.$route.query?.type
+      this.isShowEditDialog = true
+    }
   }
 }
 </script>

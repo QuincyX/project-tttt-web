@@ -5,6 +5,7 @@ el-tooltip.paramItemContainer(placement="top")
     div(v-if="detail.type") 类型: {{detail.type}}
     div(v-if="detail.description") 描述: {{detail.description}}
     div(v-if="detail.default") 默认: {{detail.default}}
+    div(v-if="detail.mock") Mock: {{detail.mock}}
 
 </template>
 

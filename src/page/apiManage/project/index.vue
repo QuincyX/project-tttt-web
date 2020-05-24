@@ -106,7 +106,6 @@ export default class extends Vue {
     _id: '',
     url: '',
     name: '',
-    _id: '',
     host: '',
     type: ''
   }
