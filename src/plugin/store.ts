@@ -1,9 +1,11 @@
 import Vue from 'vue'
 import Vuex from 'vuex'
+import createPersistedState from 'vuex-persistedstate'
 
 const storeCollections = require.context('@/store', true, /.ts$/)
 const store = {
-  modules: {}
+  modules: {},
+  plugins: [createPersistedState()]
 }
 storeCollections.keys().forEach((o) => {
   const name = o.replace('./', '').replace('.ts', '')

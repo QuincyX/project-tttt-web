@@ -70,10 +70,28 @@
       el-table-column(label="createAt" prop="createAt")
         template(v-slot="scoped")
           span {{scoped.row.createAt | formatLastDate}}
-      el-table-column(label="操作" width="120")
+      el-table-column(label="操作" width="140")
         template(v-slot="scoped")
+          el-button(type="success" icon="el-icon-plus" circle @click="handleAddItemToCart(scoped.row)")
           el-button(type="warning" icon="el-icon-edit" circle)
           el-button(type="danger" icon="el-icon-delete" circle @click="handleDelete(scoped.row)")
+
+  .floatButton
+    el-button(type="success" icon="el-icon-shopping-cart-1" size="large" circle @click="isShowCartDialog=true")
+  el-drawer(title="已添加的动作列表" :visible.sync="isShowCartDialog")
+    .drawerContainer
+      .drawerList
+        .item(v-for="(i,n) in $store.getters['action/pickedList']" :key="n")
+          .name 【{{n+1}}】{{i.name}}
+          .description {{i.description}}
+          .description {{i.api}}
+          .actionBar
+            el-button-group
+              el-button(type="warning" :disabled="n===0" icon="el-icon-top" size="mini" @click="$store.commit('action/moveUpPicked', i)")
+              el-button(type="warning" :disabled="n===$store.getters['action/pickedList'].length-1" icon="el-icon-bottom" size="mini" @click="$store.commit('action/moveDownPicked', i)")
+            el-button.rightBtn(type="danger" icon="el-icon-delete" size="mini" @click="$store.commit('action/deletePicked', i)")
+      .extendContainer
+        el-button(type="success") 生成测试用例
 
 </template>
 
@@ -95,6 +113,12 @@ export default class extends Vue {
     api: '',
     type: '',
     isEnable: ''
+  }
+  isShowCartDialog: boolean = false
+
+  handleAddItemToCart(item: any) {
+    this.$store.commit('action/addPicked', item)
+    this.isShowCartDialog = true
   }
   handleDelete(item: any) {
     this.$confirm('此操作将永久删除该数据, 是否继续?', '提示', {
@@ -135,9 +159,13 @@ export default class extends Vue {
       })
   }
   mounted(): void {
+    console.log('>>>>>>>> ', this.$store.getters['action/pickedList'])
     this.getList()
   }
 }
 </script>
 
-<style lang="less" scoped></style>
+<style lang="less" scoped>
+.cartContainer {
+}
+</style>

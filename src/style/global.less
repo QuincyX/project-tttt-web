@@ -38,3 +38,68 @@ body {
     flex-grow: 1;
   }
 }
+.floatButton {
+  position: fixed;
+  bottom: 100px;
+  right: 20px;
+}
+
+.drawerContainer {
+  display: flex;
+  flex-direction: column;
+  height: 100%;
+  .padding;
+  .drawerList {
+    flex-grow: 1;
+    overflow-y: auto;
+    .item {
+      background: @primary;
+      color: @green;
+      .border;
+      .boxShadow;
+      .marginBottom;
+      .pointer;
+      &:first-child {
+        .borderTop;
+      }
+      &:hover {
+        background: @black;
+        .actionBar {
+          .rightBtn {
+            display: block;
+          }
+        }
+      }
+      .name {
+        color: @primary;
+        padding: @gutter;
+        background: @info;
+      }
+      .description {
+        color: @info;
+        padding: (@gutter / 2) @gutter;
+        .size(@s);
+      }
+      .actionBar {
+        padding: 3px @gutter;
+        text-align: right;
+        display: flex;
+        justify-content: space-between;
+        .rightBtn {
+          display: none;
+        }
+      }
+      .list {
+        padding: @gutter;
+        span {
+          margin-right: 1em;
+          .wordBreak;
+        }
+      }
+    }
+  }
+  .extendContainer {
+    .padding;
+    .center;
+  }
+}
