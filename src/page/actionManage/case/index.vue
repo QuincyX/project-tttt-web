@@ -89,6 +89,7 @@
               el-button(type="warning" plain size="mini" v-for="(rule,ruleIndex) in i.rule" :key="ruleIndex") {{rule.name}}
             .description 输出：
               el-button(type="warning" plain size="mini" v-for="(output,outputIndex) in i.output" :key="outputIndex") {{output.name}}
+              el-button(type="success" plain size="mini" icon="el-icon-plus" @click="handleAddOutput(i)")
             .actionBar
               el-button-group
                 el-button(type="warning" :disabled="n===0" icon="el-icon-top" size="mini" @click="$store.commit('action/moveUpPicked', i)")
@@ -99,6 +100,21 @@
     div(slot="footer")
       el-button(type="default" @click="isShowEditDialog=false") 取消
       el-button(type="primary" @click="handleSubmitEditDialog") 确定
+
+  el-dialog(title="编辑输出规则" :visible.sync="isShowEditOutputDialog")
+    el-form(label-width="6em")
+      el-form-item(label="name")
+        el-input(v-model="editOutputDialogData.name")
+      el-form-item(label="source")
+        el-input(v-model="editOutputDialogData.source")
+      el-form-item(label="target")
+        el-input(v-model="editOutputDialogData.target")
+      el-form-item(label="targetType")
+        el-select(v-model="editOutputDialogData.targetType")
+          el-option(v-for="(i,n) in ['global','job','story','case','action']" :key="n" :value="i")
+    div(slot="footer")
+      el-button(type="default" @click="isShowEditOutputDialog=false") 取消
+      el-button(type="primary" @click="handleSubmitEditOutputDialog") 确定
 
   .floatButton
     el-button(type="success" icon="el-icon-shopping-cart-1" size="large" circle @click="isShowCartDialog=true")
@@ -146,7 +162,40 @@ export default class extends Vue {
     type: '单例'
   }
   isShowCartDialog: boolean = false
-
+  isShowEditOutputDialog: boolean = false
+  currentActionIdForEditOutput: string = ''
+  editOutputDialogData: any = {
+    _id: '',
+    name: '',
+    source: '',
+    target: '',
+    targetType: 'case'
+  }
+  handleAddOutput(action: any) {
+    this.currentActionIdForEditOutput = action._id
+    this.editOutputDialogData = {
+      _id: '',
+      name: '',
+      source: '',
+      target: this.editDialogData._id || '',
+      targetType: 'case'
+    }
+    this.isShowEditOutputDialog = true
+  }
+  handleSubmitEditOutputDialog() {
+    if (this.editOutputDialogData._id) {
+      this.$store.commit('action/editOutput', {
+        actionId: this.currentActionIdForEditOutput,
+        output: this.editOutputDialogData
+      })
+    } else {
+      this.$store.dispatch('action/addOutput', {
+        actionId: this.currentActionIdForEditOutput,
+        output: this.editOutputDialogData
+      })
+    }
+    this.isShowEditOutputDialog = false
+  }
   handleAddItemToCart(item: any) {
     this.$store.commit('case/addPicked', item)
     this.isShowCartDialog = true

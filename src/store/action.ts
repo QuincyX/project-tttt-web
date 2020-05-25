@@ -1,3 +1,5 @@
+import $http from '@/plugin/axios'
+
 export default {
   namespaced: true,
   state: {
@@ -10,6 +12,10 @@ export default {
     setPickedList: (state: any, payload: any) => (state.pickedList = payload),
     clearPickedList: (state: any) => (state.pickedList = []),
     addPicked: (state: any, payload: any) => state.pickedList.push(payload),
+    updatePickedItem: (state: any, payload: any) => {
+      const n = state.pickedList.findIndex((o: any) => o._id === payload._id)
+      state.pickedList.splice(n, 1, payload)
+    },
     deletePicked: (state: any, payload: any) => {
       const n = state.pickedList.findIndex((o: any) => o._id === payload._id)
       state.pickedList.splice(n, 1)
@@ -33,5 +39,13 @@ export default {
       }
     }
   },
-  actions: {}
+  actions: {
+    async addOutput({ commit }: any, payload: any) {
+      const newAction = await $http.post(
+        `/action/${payload.actionId}/output`,
+        payload.output
+      )
+      commit('updatePickedItem', newAction)
+    }
+  }
 }

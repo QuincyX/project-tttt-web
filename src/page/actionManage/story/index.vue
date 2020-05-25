@@ -35,7 +35,7 @@
                   .name {{n+1}}. {{i.name}}
                   .description 描述：{{i.description}}
                   .description 动作：
-                    el-button(type="warning" plain size="mini" v-for="(action,actionIndex) in i.actionList") {{action}}
+                    el-button(type="warning" plain size="mini" v-for="(action,actionIndex) in i.actionList") {{action.name}}
       el-table-column(label="id" prop="_id")
       el-table-column(label="name" prop="name")
       el-table-column(label="description" prop="description")
@@ -67,7 +67,7 @@
             .name {{n+1}}. {{i.name}}
             .description 描述：{{i.description}}
             .description 动作：
-              el-button(type="warning" plain size="mini" v-for="(action,actionIndex) in i.actionList") {{action}}
+              el-button(type="warning" plain size="mini" v-for="(action,actionIndex) in i.actionList") {{action.name||action}}
             .actionBar
               el-button-group
                 el-button(type="warning" :disabled="n===0" icon="el-icon-top" size="mini" @click="$store.commit('case/moveUpPicked', i)")
@@ -156,15 +156,19 @@ export default class extends Vue {
     this.$prompt('请输入任务备注', '提示', {
       confirmButtonText: '确定',
       cancelButtonText: '取消'
-    }).then(({ value }: any) => {
-      this.$http.post('/job', {
-        name: `【${item.name}】的执行任务`,
-        description: value,
-        story: item._id,
-        trigger: '手动',
-        type: '单次'
-      })
     })
+      .then(({ value }: any) => {
+        return this.$http.post('/job', {
+          name: `【${item.name}】的执行任务`,
+          description: value,
+          story: item._id,
+          trigger: '手动',
+          type: '单次'
+        })
+      })
+      .then(() => {
+        this.$router.push('/job')
+      })
   }
   handleDelete(item: any) {
     this.$confirm('此操作将永久删除该数据, 是否继续?', '提示', {

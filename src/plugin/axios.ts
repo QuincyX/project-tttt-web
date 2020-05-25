@@ -47,13 +47,13 @@ instance.interceptors.response.use(
     }
   },
   (error: AxiosError) => {
-    store.dispatch('userTrack/addError', {
-      message: error.message,
-      stack: error.stack,
-      url: error.config ? error.config.url : '',
-      method: error.config ? error.config.method : '',
-      time: Date.now()
-    })
+    // store.dispatch('userTrack/addError', {
+    //   message: error.message,
+    //   stack: error.stack,
+    //   url: error.config ? error.config.url : '',
+    //   method: error.config ? error.config.method : '',
+    //   time: Date.now()
+    // })
     if (!isDev && error.response?.status && error.response?.status >= 500) {
       router.push('/redirect/serverError')
     }
