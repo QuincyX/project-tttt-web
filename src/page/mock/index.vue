@@ -50,11 +50,11 @@
     el-form(label-width="6em")
       el-form-item(label="id" v-if="editDialogData._id")
         el-input(v-model="editDialogData._id" disabled)
-      el-form-item(label="name")
-        el-input(v-model="editDialogData.name")
-      el-form-item(label="描述")
+      el-form-item(label="名称*")
         el-input(v-model="editDialogData.description")
-      el-form-item(label="type")
+      el-form-item(label="字段名*")
+        el-input(v-model="editDialogData.name")
+      el-form-item(label="类型")
         el-select(v-model="editDialogData.type")
           el-option(v-for="i in ['global', 'job', 'story', 'case', 'action']" :key="i" :value="i")
       el-form-item(label="targetId")
@@ -85,7 +85,6 @@ export default class extends Vue {
     type: '',
     target: ''
   }
-  mockJson: any = ''
   isShowEditDialog: boolean = false
   editDialogData: any = {
     _id: '',
@@ -96,7 +95,6 @@ export default class extends Vue {
     list: []
   }
   handleSubmitDialog() {
-    this.editDialogData.push(this.mockJson)
     if (this.editDialogData._id) {
       this.$http
         .put(`/mock/${this.editDialogData._id}`, {
@@ -116,7 +114,6 @@ export default class extends Vue {
           this.getList()
         })
     }
-    this.mockJson = ''
   }
   handleAdd() {
     this.editDialogData = {
