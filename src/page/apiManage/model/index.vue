@@ -25,11 +25,12 @@
     el-table(:data="list")
       el-table-column(type='expand')
         template(v-slot="scoped")
-          el-form(label-width="8em")
-            el-form-item(v-for="(item, k) in scoped.row.properties" :key="k" :label="item.name") 
-              p 描述：{{item.description}}，
-              p 类型：{{item.type}}，
-              p 请求：{{item.require}}
+          div.list
+            div.items(v-for="(item, k) in scoped.row.properties" :key="k")
+              h3 {{item.name}}
+              <p><span>描述：</span><i>{{item.description}}</i></p>
+              <p><span>类型：</span><i>{{item.type}}</i></p>
+              <p><span>是否必填：</span><i>{{item.require}}</i></p>
       el-table-column(label="name" prop="name")
       el-table-column(label="description" prop="description")
       el-table-column(label="type" prop="type")
@@ -143,4 +144,32 @@ export default class extends Vue {
 </script>
 
 <style lang="less" scoped>
+.list{
+  display: flex;
+  flex-wrap: wrap;
+  .items{
+    width: 31%;
+    overflow: hidden;
+    margin:10px;
+    padding:10px;
+    border:1px solid #614892;
+    box-shadow: 0 0 5px #614892;
+    border-radius: 5px;
+    h3{
+      margin:10px 0
+    }
+    p{
+      display: flex;
+      span{
+        width:20%;
+        min-width: 80px;
+        overflow:hidden;
+      }
+      i{
+        width:80%;
+        overflow:hidden;
+      }
+    }
+  }
+}
 </style>
