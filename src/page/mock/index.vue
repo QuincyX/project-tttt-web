@@ -59,6 +59,9 @@
           el-option(v-for="i in ['global', 'job', 'story', 'case', 'action']" :key="i" :value="i")
       el-form-item(label="targetId")
         el-input(v-model="editDialogData.target")
+      el-form-item(label="list")
+        el-button(type="info" v-for="(i,n) in editDialogData.list" :key="n" @click="handleDeleteMockListItem(editDialogData.list,n)") {{i}}
+        el-button(type="success" icon="el-icon-plus" @click="addMockList(editDialogData)")
     div(slot="footer")
       el-button(type="default" @click="isShowEditDialog=false") 取消
       el-button(type="primary" @click="handleSubmitDialog") 确定
@@ -82,15 +85,18 @@ export default class extends Vue {
     type: '',
     target: ''
   }
+  mockJson: any = ''
   isShowEditDialog: boolean = false
   editDialogData: any = {
     _id: '',
     name: '',
     description: '',
     type: '',
-    target: ''
+    target: '',
+    list: []
   }
   handleSubmitDialog() {
+    this.editDialogData.push(this.mockJson)
     if (this.editDialogData._id) {
       this.$http
         .put(`/mock/${this.editDialogData._id}`, {
@@ -110,6 +116,7 @@ export default class extends Vue {
           this.getList()
         })
     }
+    this.mockJson = ''
   }
   handleAdd() {
     this.editDialogData = {
@@ -117,7 +124,8 @@ export default class extends Vue {
       name: '',
       description: '',
       type: '',
-      target: ''
+      target: '',
+      list: []
     }
     this.isShowEditDialog = true
   }
@@ -148,12 +156,25 @@ export default class extends Vue {
       cancelButtonText: '取消'
     })
       .then(({ value }: any) => {
+        this.editDialogData.list.push(value)
         return this.$http.post(`/mock/${item._id}/list/item`, {
           newItem: value
         })
       })
       .then(() => {
         this.getList()
+      })
+  }
+  addMockList(item: any) {
+    this.$prompt('请输入新的内容', '提示', {
+      confirmButtonText: '确定',
+      cancelButtonText: '取消'
+    })
+      .then(({ value }: any) => {
+        if(value && value.trim().length) {
+          this.editDialogData.list.push(value)
+          this.editDialogData.list = Array.from(new Set(this.editDialogData.list))
+        }
       })
   }
   handleDelete(item: any) {
