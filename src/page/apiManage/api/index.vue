@@ -2,6 +2,8 @@
 .page.cardList
   el-card
     el-form(inline label-width="7em")
+      el-form-item(label="id")
+        el-input(v-model="filter._id")
       el-form-item(label="method")
         el-select(v-model="filter.method")
           el-option(value="") 全部
@@ -21,7 +23,7 @@
   el-card.fullCard
     el-pagination(
       slot="header"
-      background hide-on-single-page
+      background
       layout="total,sizes,prev,pager,next"
       :current-page.sync="page.page"
       :page-size="page.size"
@@ -75,8 +77,9 @@ export default class extends Vue {
     total: 100
   }
   filter = {
+    _id: '',
     url: '',
-    method:'',
+    method: '',
     apiGroup: '',
     project: '',
     isEnable: ''
@@ -106,7 +109,7 @@ export default class extends Vue {
     this.page.page = val
     this.getList()
   }
- handleEdit(item: any) {
+  handleEdit(item: any) {
     this.editDialogData = { ...item }
     this.isShowEditDialog = true
   }
@@ -127,12 +130,12 @@ export default class extends Vue {
 </script>
 
 <style lang="less" scoped>
-.flex{
-  display:flex;
-  .item{
-    padding:5px 10px;
-    border:1px solid #7b7575;
-    margin:5px 10px;
+.flex {
+  display: flex;
+  .item {
+    padding: 5px 10px;
+    border: 1px solid #7b7575;
+    margin: 5px 10px;
     border-radius: 5px;
   }
 }

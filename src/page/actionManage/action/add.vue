@@ -277,19 +277,25 @@ export default class extends Vue {
   }
   async getProjectList() {
     this.projectList = await this.$http.get('/project?size=0')
-    this.handleChangeProject(this.projectList[0])
+    if (this.projectList.length) {
+      this.handleChangeProject(this.projectList[0])
+    }
   }
   async getGroupList() {
     this.groupList = await this.$http.get(
       `/apiGroup?size=0&project=${this.currentProjectId}`
     )
-    this.handleChangeGroup(this.groupList[0])
+    if (this.groupList.length) {
+      this.handleChangeGroup(this.groupList[0])
+    }
   }
   async getApiList() {
     this.apiList = await this.$http.get(
       `/apiItem?size=0&apiGroup=${this.currentGroupId}`
     )
-    this.handleChangeApi(this.apiList[0])
+    if (this.apiList.length) {
+      this.handleChangeApi(this.apiList[0])
+    }
   }
   mounted(): void {
     this.getProjectList()

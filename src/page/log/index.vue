@@ -2,18 +2,19 @@
 .page.cardList
   el-card
     el-form(inline label-width="7em")
-      el-form-item(label="type")
+      el-form-item(label="日志类型")
         el-select(v-model="filter.type")
           el-option(value="") 全部
-          el-option(value="success")
-          el-option(value="error")
-      el-form-item(label="jobId")
+          el-option(value="success" label="成功")
+          el-option(value="warning" label="警告")
+          el-option(value="error" label="错误")
+      el-form-item(label="关联任务")
         el-input(v-model="filter.job")
-      el-form-item(label="belongType")
+      el-form-item(label="关联动作")
         el-select(v-model="filter.belongType")
           el-option(value="") 全部
           el-option(v-for="i in ['job','story','case','action','http','rule','output','sys']" :key="i" :value="i")
-      el-form-item(label="belongTo")
+      el-form-item(:label="`${filter.belongType} 的ID`" v-if="filter.belongType")
         el-input(v-model="filter.belongTo")
     el-form(label-width="5em")
       el-form-item
@@ -22,7 +23,7 @@
   el-card.fullCard
     el-pagination(
       slot="header"
-      background hide-on-single-page
+      background
       layout="total,sizes,prev,pager,next"
       :current-page.sync="page.page"
       :page-size="page.size"
@@ -35,19 +36,26 @@
       el-table-column(type="expand")
         template(v-slot="scoped")
           el-form(label-width="7em")
-            el-form-item(label="id") {{scoped.row._id}}
-            el-form-item(label="content" v-if="scoped.row.content") {{scoped.row.content}}
-      el-table-column(label="type" prop="type")
+            el-form-item(label="日志ID") {{scoped.row._id}}
+            el-form-item(label="返回内容" v-if="scoped.row.content")
+              pre {{scoped.row.content}}
+            el-form-item(label="curl脚本" v-if="scoped.row.curl")
+              pre {{scoped.row.curl}}
+      el-table-column(label="报告类型" prop="type")
         template(v-slot="scoped")
-          el-button(v-if="scoped.row.type==='success'" type="success" size="mini") Success
-          el-button(v-else-if="scoped.row.type==='error'" type="danger" size="mini") Error
-      el-table-column(label="title" prop="title")
-      el-table-column(label="job" prop="job")
-      el-table-column(label="belongType" prop="belongType")
-      el-table-column(label="belongTo" prop="belongTo")
-      el-table-column(label="createAt" prop="createAt")
+          el-button(v-if="scoped.row.type==='success'" type="success" size="mini") 成功
+          el-button(v-else-if="scoped.row.type==='warning'" type="danger" size="mini") 告警
+          el-button(v-else-if="scoped.row.type==='error'" type="danger" size="mini") 错误
+      el-table-column(label="标题" prop="title")
+      el-table-column(label="关联动作" prop="belongType")
+      el-table-column(label="动作ID" prop="belongTo")
+      el-table-column(label="所属任务" prop="job")
+      el-table-column(label="生成时间" prop="createAt")
         template(v-slot="scoped")
           span {{scoped.row.createAt | formatLastDate}}
+      el-table-column(label="操作" width="240" align="center")
+        template(v-slot="scoped")
+          el-button(v-if="scoped.row.type==='error'" type="danger" size="mini" icon="el-icon-view" @click="handleSendNotice(scoped.row._id)") 发送错误通知
 
 </template>
 
@@ -69,6 +77,11 @@ export default class extends Vue {
     job: '',
     belongType: '',
     belongTo: ''
+  }
+  handleSendNotice(logId: any) {
+    this.$http.post('/notice/error', {
+      log: logId
+    })
   }
   handleSearch() {
     this.page.page = 1
