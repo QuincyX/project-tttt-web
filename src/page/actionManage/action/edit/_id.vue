@@ -108,11 +108,6 @@ import paramItem from '@/component/action/paramItem.vue'
   },
 })
 export default class extends Vue {
-  // projectList: any[] = []
-  // currentProjectId: string = ''
-  // groupList: any[] = []
-  // currentGroupId: string = ''
-  apiList: any[] = []
   currentApiId: string = ''
   showArray: any[] = ['body', 'query', 'header', 'path']
   copyApiDetail: any = {
@@ -168,12 +163,6 @@ export default class extends Vue {
   addMockData: any = {
     name: '',
     type: '',
-  }
-  get baseUrl(): string {
-    const currentProject = this.projectList.find(
-      (o) => o._id === this.currentProjectId
-    )
-    return currentProject.host
   }
 
   handleAddNewMock() {
@@ -291,12 +280,6 @@ export default class extends Vue {
     this.actionDetail.name = item.name
   }
 
-  async getApiList() {
-    this.apiList = await this.$http.get(
-      `/apiItem?size=0&apiGroup=${this.currentGroupId}`
-    )
-    this.handleChangeApi(this.apiList[0])
-  }
   async mounted() {
     this.actionDetail = await this.$http.get(`/action/${this.$route.params.id}`)
     this.apiDetail = await this.$http.get(`/apiItem/${this.actionDetail.api}`)
