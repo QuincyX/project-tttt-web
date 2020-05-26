@@ -5,7 +5,6 @@
         .cardHeader API: {{actionDetail.api}}
         el-button.headerRightButton(type="success" @click="handleSubmitAddAction") Submit
       el-form(label-width="8em" size="medium")
-        //- el-form-item(label="请求地址") {{apiDetail.method.toUpperCase()}} http://{{baseUrl}}{{apiDetail.url}}
         el-form-item(label="名称")
           el-input(v-model="actionDetail.name")
         el-form-item(label="描述")
@@ -109,10 +108,10 @@ import paramItem from '@/component/action/paramItem.vue'
   },
 })
 export default class extends Vue {
-  projectList: any[] = []
-  currentProjectId: string = ''
-  groupList: any[] = []
-  currentGroupId: string = ''
+  // projectList: any[] = []
+  // currentProjectId: string = ''
+  // groupList: any[] = []
+  // currentGroupId: string = ''
   apiList: any[] = []
   currentApiId: string = ''
   showArray: any[] = ['body', 'query', 'header', 'path']
@@ -170,12 +169,12 @@ export default class extends Vue {
     name: '',
     type: '',
   }
-  // get baseUrl(): string {
-  // const currentProject = this.projectList.find(
-  //   (o) => o._id === this.currentProjectId
-  // )
-  // return currentProject.host
-  // }
+  get baseUrl(): string {
+    const currentProject = this.projectList.find(
+      (o) => o._id === this.currentProjectId
+    )
+    return currentProject.host
+  }
 
   handleAddNewMock() {
     this.$router.push({
@@ -193,8 +192,6 @@ export default class extends Vue {
     let arr1 = [...b]
     arr = arr.filter((item: any) => {
       return arr1.findIndex((o) => o.name === item.name) < 0
-      // let arrlist = arr1.map((v) => v.name)
-      // return !arrlist.includes(item.name)
     })
     return arr
   }
@@ -239,9 +236,11 @@ export default class extends Vue {
     this.actionDetail[type].splice(index, 1)
   }
   handleSubmitAddAction() {
-    this.$http.post('/action', this.actionDetail).then(() => {
-      this.$router.push('/actionManage/action')
-    })
+    this.$http
+      .put(`/action/${this.actionDetail._id}`, this.actionDetail)
+      .then(() => {
+        this.$router.push('/actionManage/action')
+      })
   }
   async handleAddRule() {
     await this.getRuleList()
@@ -299,7 +298,6 @@ export default class extends Vue {
     this.handleChangeApi(this.apiList[0])
   }
   async mounted() {
-    // this.getProjectList()
     this.actionDetail = await this.$http.get(`/action/${this.$route.params.id}`)
     this.apiDetail = await this.$http.get(`/apiItem/${this.actionDetail.api}`)
     this.copyApiDetail = JSON.parse(JSON.stringify(this.apiDetail))
