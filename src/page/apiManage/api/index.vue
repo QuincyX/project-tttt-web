@@ -57,8 +57,22 @@
       el-table-column(label="createAt" prop="createAt")
       el-table-column(label="操作" width="120")
         template(v-slot="scoped")
-          el-button(type="warning" icon="el-icon-edit" circle @click="$router.push(`/apiManage/api/edit/${scoped.row._id}`)")
+          el-button(type="warning" icon="el-icon-edit" circle @click="handleEdit(scoped.row)")
           el-button(type="danger" icon="el-icon-delete" circle @click="handleDelete(scoped.row)")
+          
+  el-dialog(:title="'编辑'" :visible.sync="isShowEditDialog")
+    el-form(label-width="6em")
+      el-form-item(label="id" v-if="editDialogData._id")
+        el-input(v-model="editDialogData._id" disabled)
+      el-form-item(label="name")
+        el-input(v-model="editDialogData.name")
+      el-form-item(label="描述")
+        el-input(v-model="editDialogData.description")
+      el-form-item(label="url")
+        el-input(v-model="editDialogData.url")
+    div(slot="footer")
+      el-button(type="default" @click="isShowEditDialog=false") 取消
+      el-button(type="primary" @click="handleSubmitDialog") 确定
 </template>
 
 <script lang="ts">
@@ -66,15 +80,15 @@ import { Vue, Component } from 'vue-property-decorator'
 import paramItem from '@/component/action/paramItem.vue'
 @Component({
   components: {
-    paramItem
-  }
+    paramItem,
+  },
 })
 export default class extends Vue {
   list = []
   page = {
     page: 1,
     size: 10,
-    total: 100
+    total: 100,
   }
   filter = {
     _id: '',
@@ -82,7 +96,7 @@ export default class extends Vue {
     method: '',
     apiGroup: '',
     project: '',
-    isEnable: ''
+    isEnable: '',
   }
   isShowEditDialog: boolean = false
   editDialogData: any = {
@@ -93,7 +107,7 @@ export default class extends Vue {
     apiGroup: '',
     project: '',
     host: '',
-    type: ''
+    type: '',
   }
   handleSearch() {
     this.page.page = 1
@@ -113,10 +127,36 @@ export default class extends Vue {
     this.editDialogData = { ...item }
     this.isShowEditDialog = true
   }
+  handleDelete(item: any) {
+    this.$confirm('此操作将永久删除该数据, 是否继续?', '提示', {
+      type: 'warning',
+    })
+      .then(() => {
+        return this.$http.delete(`/apiItem/${item._id}`)
+      })
+      .then(() => {
+        this.$message({
+          type: 'success',
+          message: '删除成功!',
+        })
+        this.getList()
+      })
+  }
+  handleSubmitDialog() {
+    this.$http
+      .put(`/apiItem/${this.editDialogData._id}`, {
+        ...this.editDialogData,
+      })
+      .then((res) => {
+        this.isShowEditDialog = false
+        this.page.page = 1
+        this.getList()
+      })
+  }
   getList() {
     this.$http
       .get('/apiItem', {
-        params: { ...this.page, ...this.filter }
+        params: { ...this.page, ...this.filter },
       })
       .then(({ page, list }: any) => {
         this.page = page
