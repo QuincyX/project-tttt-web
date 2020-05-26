@@ -26,7 +26,7 @@
   el-card.fullCard
     el-pagination(
       slot="header"
-      background hide-on-single-page
+      background
       layout="total,sizes,prev,pager,next"
       :current-page.sync="page.page"
       :page-size="page.size"
@@ -36,25 +36,25 @@
       @current-change="handleCurrentChange"
     )
     el-table(:data="list")
-      el-table-column(label="id" prop="_id")
-      el-table-column(label="name" prop="name")
-      el-table-column(label="description" prop="description")
-      el-table-column(label="story" prop="story")
-      el-table-column(label="trigger" prop="trigger")
-      el-table-column(label="report" prop="report")
-      el-table-column(label="type" prop="type")
-      el-table-column(label="status" prop="status")
+      el-table-column(label="ID" prop="_id")
+      el-table-column(label="名称" prop="name")
+      el-table-column(label="备注" prop="description")
+      el-table-column(label="故事" prop="story")
+      el-table-column(label="触发方式" prop="trigger")
+      el-table-column(label="耗时" prop="duration")
+      el-table-column(label="报告" prop="report")
+      el-table-column(label="任务类型" prop="type")
+      el-table-column(label="状态" prop="status")
         template(v-slot="scoped")
-          el-button(v-if="scoped.row.status==='进行中'" type="warning") 进行中
-          el-button(v-else-if="scoped.row.status==='已完成'" type="primary") 已完成
-      el-table-column(label="createAt" prop="createAt")
+          el-button(v-if="scoped.row.status==='进行中'" size="mini" type="warning" icon="el-icon-loading") 进行中
+          el-button(v-else-if="scoped.row.status==='已完成'" size="mini" type="primary") 已结束
+      el-table-column(label="创建时间" prop="createAt")
         template(v-slot="scoped")
           span {{scoped.row.createAt | formatLastDate}}
-      el-table-column(label="操作" width="140" align="center")
+      el-table-column(label="操作" width="240" align="center")
         template(v-slot="scoped")
-          el-button(type="success" icon="el-icon-view" circle @click="$router.push(`/log?job=${scoped.row._id}`)")
-          el-button(type="warning" icon="el-icon-edit" circle)
-          el-button(type="danger" icon="el-icon-delete" circle @click="handleDelete(scoped.row)")
+          el-button(type="success" size="mini" icon="el-icon-view" @click="$router.push(`/log?job=${scoped.row._id}`)") 查看日志
+          el-button(type="danger" size="mini" icon="el-icon-delete" @click="handleDelete(scoped.row)") 清空任务
 
 </template>
 

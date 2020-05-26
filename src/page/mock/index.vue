@@ -16,7 +16,7 @@
   el-card.fullCard
     el-pagination(
       slot="header"
-      background hide-on-single-page
+      background
       layout="total,sizes,prev,pager,next"
       :current-page.sync="page.page"
       :page-size="page.size"
@@ -85,7 +85,6 @@ export default class extends Vue {
     type: '',
     target: ''
   }
-  mockJson: any = ''
   isShowEditDialog: boolean = false
   editDialogData: any = {
     _id: '',
@@ -96,7 +95,6 @@ export default class extends Vue {
     list: []
   }
   handleSubmitDialog() {
-    this.editDialogData.push(this.mockJson)
     if (this.editDialogData._id) {
       this.$http
         .put(`/mock/${this.editDialogData._id}`, {
@@ -116,7 +114,6 @@ export default class extends Vue {
           this.getList()
         })
     }
-    this.mockJson = ''
   }
   handleAdd() {
     this.editDialogData = {

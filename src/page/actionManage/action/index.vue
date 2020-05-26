@@ -20,7 +20,7 @@
   el-card.fullCard
     el-pagination(
       slot="header"
-      background hide-on-single-page
+      background
       layout="total,sizes,prev,pager,next"
       :current-page.sync="page.page"
       :page-size="page.size"
