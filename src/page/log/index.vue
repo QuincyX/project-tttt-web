@@ -53,6 +53,9 @@
       el-table-column(label="生成时间" prop="createAt")
         template(v-slot="scoped")
           span {{scoped.row.createAt | formatLastDate}}
+      el-table-column(label="操作" width="240" align="center")
+        template(v-slot="scoped")
+          el-button(v-if="scoped.row.type==='error'" type="danger" size="mini" icon="el-icon-view" @click="handleSendNotice(scoped.row._id)") 发送错误通知
 
 </template>
 
@@ -74,6 +77,11 @@ export default class extends Vue {
     job: '',
     belongType: '',
     belongTo: ''
+  }
+  handleSendNotice(logId: any) {
+    this.$http.post('/notice/error', {
+      log: logId
+    })
   }
   handleSearch() {
     this.page.page = 1
