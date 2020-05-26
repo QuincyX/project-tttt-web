@@ -42,7 +42,6 @@
       el-table-column(label="故事" prop="story")
       el-table-column(label="触发方式" prop="trigger")
       el-table-column(label="耗时" prop="duration")
-      el-table-column(label="报告" prop="report")
       el-table-column(label="任务类型" prop="type")
       el-table-column(label="状态" prop="status")
         template(v-slot="scoped")
