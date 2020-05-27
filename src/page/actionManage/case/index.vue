@@ -95,7 +95,9 @@
               el-button-group
                 el-button(type="warning" :disabled="n===0" icon="el-icon-top" size="mini" @click="$store.commit('action/moveUpPicked', i)")
                 el-button(type="warning" :disabled="n===$store.getters['action/pickedList'].length-1" icon="el-icon-bottom" size="mini" @click="$store.commit('action/moveDownPicked', i)")
-              el-button.rightBtn(type="danger" icon="el-icon-delete" size="mini" @click="$store.commit('action/deletePicked', i)")
+              div.btns
+                el-button.rightBtn(type="info" icon="el-icon-edit" size="mini" @click="handleEditAction(i)")
+                el-button.rightBtn(type="danger" icon="el-icon-delete" size="mini" @click="$store.commit('action/deletePicked', i)")
         .actionList(v-else)
           el-button(type="warning" @click="$router.push('/actionManage/action')") 先去选择动作
     div(slot="footer")
@@ -139,20 +141,20 @@
 import { Vue, Component } from 'vue-property-decorator'
 
 @Component({
-  components: {}
+  components: {},
 })
 export default class extends Vue {
   list = []
   page = {
     page: 1,
     size: 10,
-    total: 100
+    total: 100,
   }
   filter = {
     name: '',
     description: '',
     isEnable: '',
-    type: ''
+    type: '',
   }
   isShowEditDialog: boolean = false
   editDialogData: any = {
@@ -160,7 +162,7 @@ export default class extends Vue {
     name: '',
     description: '',
     actionList: [],
-    type: '单例'
+    type: '单例',
   }
   isShowCartDialog: boolean = false
   isShowEditOutputDialog: boolean = false
@@ -170,12 +172,12 @@ export default class extends Vue {
     name: '',
     source: '',
     target: '',
-    targetType: 'case'
+    targetType: 'case',
   }
   handleTrigger(item: any) {
     this.$prompt('请输入任务备注', '提示', {
       confirmButtonText: '确定',
-      cancelButtonText: '取消'
+      cancelButtonText: '取消',
     })
       .then(({ value }: any) => {
         return this.$http.post('/job', {
@@ -184,12 +186,15 @@ export default class extends Vue {
           targetType: 'case',
           targetId: item._id,
           trigger: '手动',
-          type: '单次'
+          type: '单次',
         })
       })
       .then(() => {
         this.$router.push('/job')
       })
+  }
+  handleEditAction(i: any) {
+    this.$router.push(`/actionManage/action/edit/${i._id}`)
   }
   handleAddOutput(action: any) {
     this.currentActionIdForEditOutput = action._id
@@ -198,7 +203,7 @@ export default class extends Vue {
       name: '',
       source: '',
       target: this.editDialogData._id || '',
-      targetType: 'case'
+      targetType: 'case',
     }
     this.isShowEditOutputDialog = true
   }
@@ -206,12 +211,12 @@ export default class extends Vue {
     if (this.editOutputDialogData._id) {
       this.$store.commit('action/editOutput', {
         actionId: this.currentActionIdForEditOutput,
-        output: this.editOutputDialogData
+        output: this.editOutputDialogData,
       })
     } else {
       this.$store.dispatch('action/addOutput', {
         actionId: this.currentActionIdForEditOutput,
-        output: this.editOutputDialogData
+        output: this.editOutputDialogData,
       })
     }
     this.isShowEditOutputDialog = false
@@ -242,7 +247,7 @@ export default class extends Vue {
           actionList: this.$store.getters['action/pickedList'].map(
             (o: any) => o._id
           ),
-          type: '单例'
+          type: '单例',
         })
         .then((res) => {
           this.$store.commit('action/clearPickedList')
@@ -257,7 +262,7 @@ export default class extends Vue {
           actionList: this.$store.getters['action/pickedList'].map(
             (o: any) => o._id
           ),
-          type: '单例'
+          type: '单例',
         })
         .then((res) => {
           this.$store.commit('action/clearPickedList')
@@ -268,7 +273,7 @@ export default class extends Vue {
   }
   handleDelete(item: any) {
     this.$confirm('此操作将永久删除该数据, 是否继续?', '提示', {
-      type: 'warning'
+      type: 'warning',
     })
       .then(() => {
         return this.$http.delete(`/job/${item._id}`)
@@ -276,7 +281,7 @@ export default class extends Vue {
       .then(() => {
         this.$message({
           type: 'success',
-          message: '删除成功!'
+          message: '删除成功!',
         })
       })
   }
@@ -297,7 +302,7 @@ export default class extends Vue {
   getList() {
     this.$http
       .get('/case', {
-        params: { ...this.page, ...this.filter, relate: true }
+        params: { ...this.page, ...this.filter, relate: true },
       })
       .then(({ page, list }: any) => {
         this.page = page
@@ -347,6 +352,9 @@ export default class extends Vue {
       }
     }
   }
+}
+.btns {
+  display: flex;
 }
 .actionListInTable {
   display: flex;
