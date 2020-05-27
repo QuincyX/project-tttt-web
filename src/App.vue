@@ -31,15 +31,15 @@ export default class AppHome extends Vue {
     border-radius: 50%;
     opacity: 0.45;
     filter: blur(10px);
-    &:nth-child(2) {
+    &:nth-child(1) {
       box-shadow: 0 0 45vmax 45vmax #ff00ff;
       animation: hue 5s 0s linear infinite, move1 10s 0s linear infinite;
     }
-    &:nth-child(3) {
+    &:nth-child(2) {
       box-shadow: 0 0 45vmax 45vmax hsla(0, 0%, 0%, 0.5);
       animation: hue 10s 0s linear infinite, move2 15s 0s linear infinite;
     }
-    &:nth-child(4) {
+    &:nth-child(3) {
       box-shadow: 0 0 45vmax 45vmax #00ffff;
       animation: hue 15s 0s linear infinite, move3 20s 0s linear infinite;
       opacity: 0.2;
