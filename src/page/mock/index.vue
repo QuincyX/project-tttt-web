@@ -6,6 +6,8 @@
         el-select(v-model="filter.type")
           el-option(value="") 全部
           el-option(v-for="i in ['global', 'job', 'story', 'case', 'action']" :key="i" :value="i")
+      el-form-item(label="name")
+        el-input(v-model="filter.name")
       el-form-item(label="targetId")
         el-input(v-model="filter.target")
     el-form(label-width="5em")
@@ -60,7 +62,7 @@
       el-form-item(label="targetId" v-if="editDialogData.type!=='global'")
         el-input(v-model="editDialogData.target")
       el-form-item(label="list")
-        el-button(type="info" v-for="(i,n) in editDialogData.list" :key="n" @click="handleDeleteMockListItemInEditDialog(editDialogData,n)") {{i}}
+        el-button(type="info" style="max-width:120px; overflow: hidden;white-space: nowrap;text-overflow: ellipsis;" v-for="(i,n) in editDialogData.list" :key="n" @click="handleDeleteMockListItemInEditDialog(editDialogData,n)") {{i}}
         el-button(type="success" icon="el-icon-plus" @click="addMockList(editDialogData)")
     div(slot="footer")
       el-button(type="default" @click="isShowEditDialog=false") 取消
@@ -72,18 +74,19 @@
 import { Vue, Component } from 'vue-property-decorator'
 
 @Component({
-  components: {}
+  components: {},
 })
 export default class extends Vue {
   list = []
   page = {
     page: 1,
     size: 10,
-    total: 100
+    total: 100,
   }
   filter = {
     type: '',
-    target: ''
+    target: '',
+    name: '',
   }
   isShowEditDialog: boolean = false
   editDialogData: any = {
@@ -92,13 +95,13 @@ export default class extends Vue {
     description: '',
     type: '',
     target: '',
-    list: []
+    list: [],
   }
   handleSubmitDialog() {
     if (this.editDialogData._id) {
       this.$http
         .put(`/mock/${this.editDialogData._id}`, {
-          ...this.editDialogData
+          ...this.editDialogData,
         })
         .then((res) => {
           this.isShowEditDialog = false
@@ -107,7 +110,7 @@ export default class extends Vue {
     } else {
       this.$http
         .post(`/mock`, {
-          ...this.editDialogData
+          ...this.editDialogData,
         })
         .then((res) => {
           this.isShowEditDialog = false
@@ -122,7 +125,7 @@ export default class extends Vue {
       description: '',
       type: '',
       target: '',
-      list: []
+      list: [],
     }
     this.isShowEditDialog = true
   }
@@ -138,7 +141,7 @@ export default class extends Vue {
       `此操作将永久删除该数据【${item.list[index]}】, 是否继续?`,
       '提示',
       {
-        type: 'warning'
+        type: 'warning',
       }
     )
       .then(() => {
@@ -153,12 +156,12 @@ export default class extends Vue {
   handleAddMockList(item: any) {
     this.$prompt('请输入新的内容', '提示', {
       confirmButtonText: '确定',
-      cancelButtonText: '取消'
+      cancelButtonText: '取消',
     })
       .then(({ value }: any) => {
         this.editDialogData.list.push(value)
         return this.$http.post(`/mock/${item._id}/list/item`, {
-          newItem: value
+          newItem: value,
         })
       })
       .then(() => {
@@ -168,7 +171,7 @@ export default class extends Vue {
   addMockList(item: any) {
     this.$prompt('请输入新的内容', '提示', {
       confirmButtonText: '确定',
-      cancelButtonText: '取消'
+      cancelButtonText: '取消',
     }).then(({ value }: any) => {
       if (value && value.trim().length) {
         this.editDialogData.list.push(value)
@@ -178,15 +181,16 @@ export default class extends Vue {
   }
   handleDelete(item: any) {
     this.$confirm('此操作将永久删除该数据, 是否继续?', '提示', {
-      type: 'warning'
+      type: 'warning',
     })
       .then(() => {
         return this.$http.delete(`/mock/${item._id}`)
       })
       .then(() => {
+        this.getList()
         this.$message({
           type: 'success',
-          message: '删除成功!'
+          message: '删除成功!',
         })
       })
   }
@@ -207,7 +211,7 @@ export default class extends Vue {
   getList() {
     this.$http
       .get('/mock', {
-        params: { ...this.page, ...this.filter }
+        params: { ...this.page, ...this.filter },
       })
       .then(({ page, list }: any) => {
         this.page = page

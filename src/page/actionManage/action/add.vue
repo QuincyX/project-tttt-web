@@ -112,6 +112,26 @@
       .extendContainer
         el-button(type="success" @click="handleAddNewMock") 为【{{addMockData.name}}】添加新规则
 
+  el-dialog(:title="editDialogData._id?'编辑':'添加'" :visible.sync="isShowEditDialog")
+    el-form(label-width="6em")
+      el-form-item(label="id" v-if="editDialogData._id")
+        el-input(v-model="editDialogData._id" disabled)
+      el-form-item(label="名称*")
+        el-input(v-model="editDialogData.description")
+      el-form-item(label="字段名*")
+        el-input(v-model="editDialogData.name" disabled)
+      el-form-item(label="类型")
+        el-select(v-model="editDialogData.type")
+          el-option(v-for="i in ['global', 'job', 'story', 'case', 'action']" :key="i" :value="i")
+      el-form-item(label="targetId" v-if="editDialogData.type!=='global'")
+        el-input(v-model="editDialogData.target")
+      el-form-item(label="list")
+        el-button(type="info" style="max-width:120px; overflow: hidden;white-space: nowrap;text-overflow: ellipsis;" v-for="(i,n) in editDialogData.list" :key="n" @click="handleDeleteMockListItemInEditDialog(editDialogData,n)") {{i}}
+        el-button(type="success" icon="el-icon-plus" @click="addMockList(editDialogData)")
+    div(slot="footer")
+      el-button(type="default" @click="isShowEditDialog=false") 取消
+      el-button(type="primary" @click="handleSubmitDialog") 确定
+
 
 </template>
 
@@ -120,7 +140,7 @@ import { Vue, Component } from 'vue-property-decorator'
 import paramItem from '@/component/action/paramItem.vue'
 
 @Component({
-  components: { paramItem }
+  components: { paramItem },
 })
 export default class extends Vue {
   projectList: any[] = []
@@ -138,7 +158,7 @@ export default class extends Vue {
     query: [],
     path: [],
     body: [],
-    header: []
+    header: [],
   }
   actionDetail = {
     api: '',
@@ -151,17 +171,17 @@ export default class extends Vue {
     body: <Array<any>>[],
     header: <Array<any>>[],
     rule: <Array<any>>[],
-    output: <Array<any>>[]
+    output: <Array<any>>[],
   }
   addRuleData = {
     name: '',
-    rule: ''
+    rule: '',
   }
   addOutputData = {
     name: '',
     source: '',
     target: '',
-    targetType: ''
+    targetType: '',
   }
   ruleList: any[] = []
   isShowAddRuleDialog: boolean = false
@@ -170,7 +190,32 @@ export default class extends Vue {
   isShowMockPickDialog: boolean = false
   addMockData: any = {
     name: '',
-    type: ''
+    type: '',
+  }
+  isShowEditDialog: boolean = false
+  editDialogData: any = {
+    _id: '',
+    name: '',
+    description: '',
+    type: 'global',
+    target: '',
+    list: [],
+  }
+  async handleSubmitDialog() {
+    let _that = this
+    this.$http
+      .post(`/mock`, {
+        ...this.editDialogData,
+      })
+      .then((res) => {
+        return this.$http.get('/mock', {
+          params: { size: 0, type: 'global', name: this.addMockData.name },
+        })
+      })
+      .then((res: any) => {
+        this.mockList = res
+        this.isShowEditDialog = false
+      })
   }
   get baseUrl(): string {
     const currentProject = this.projectList.find(
@@ -180,12 +225,25 @@ export default class extends Vue {
   }
 
   handleAddNewMock() {
-    this.$router.push({
-      path: '/mock',
-      query: {
-        action: 'add',
-        type: 'global',
-        name: this.addMockData.name
+    // this.$router.push({
+    //   path: '/mock',
+    //   query: {
+    //     action: 'add',
+    //     type: 'global',
+    //     name: this.addMockData.name,
+    //   },
+    // })
+    this.editDialogData.name = this.addMockData.name
+    this.isShowEditDialog = true
+  }
+  addMockList(item: any) {
+    this.$prompt('请输入新的内容', '提示', {
+      confirmButtonText: '确定',
+      cancelButtonText: '取消',
+    }).then(({ value }: any) => {
+      if (value && value.trim().length) {
+        this.editDialogData.list.push(value)
+        this.editDialogData.list = Array.from(new Set(this.editDialogData.list))
       }
     })
   }
@@ -193,7 +251,7 @@ export default class extends Vue {
     // @ts-ignore
     this.actionDetail[this.addMockData.type].push({
       name: this.addMockData.name,
-      mock: mockItem._id
+      mock: mockItem._id,
     })
     // @ts-ignore
     const paramIndexForApiDetail = this.apiDetail[
@@ -203,14 +261,14 @@ export default class extends Vue {
     this.apiDetail[this.addMockData.type].splice(paramIndexForApiDetail, 1)
     this.addMockData = {
       name: '',
-      type: ''
+      type: '',
     }
     this.isShowMockPickDialog = false
   }
   async handleAddMock(item: any, type: string) {
     this.addMockData = { name: item.name, type }
     this.mockList = await this.$http.get('/mock', {
-      params: { size: 0, type: 'global', name: item.name }
+      params: { size: 0, type: 'global', name: item.name },
     })
     this.isShowMockPickDialog = true
   }
@@ -223,13 +281,16 @@ export default class extends Vue {
     await this.getRuleList()
     this.addRuleData = {
       name: '',
-      rule: ''
+      rule: '',
     }
     this.isShowAddRuleDialog = true
   }
+  handleDeleteMockListItemInEditDialog(item: any, index: number) {
+    this.editDialogData.list.splice(index, 1)
+  }
   handleDeleteRule(index: number) {
     this.$confirm('此操作将删除该数据, 是否继续?', '提示', {
-      type: 'warning'
+      type: 'warning',
     }).then(() => {
       this.actionDetail.rule.splice(index, 1)
     })
@@ -243,13 +304,13 @@ export default class extends Vue {
       name: '',
       source: '',
       target: '',
-      targetType: ''
+      targetType: '',
     }
     this.isShowAddOutputDialog = true
   }
   handleDeleteOutput(index: number) {
     this.$confirm('此操作将删除该数据, 是否继续?', '提示', {
-      type: 'warning'
+      type: 'warning',
     }).then(() => {
       this.actionDetail.output.splice(index, 1)
     })
