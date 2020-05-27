@@ -124,13 +124,14 @@ export default class extends Vue {
       type: 'warning'
     })
       .then(() => {
-        return this.$http.delete(`/job/${item._id}`)
+        return this.$http.delete(`/action/${item._id}`)
       })
       .then(() => {
         this.$message({
           type: 'success',
           message: '删除成功!'
         })
+        this.getList()
       })
   }
   handleSearch() {

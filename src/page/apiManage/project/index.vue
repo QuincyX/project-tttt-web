@@ -35,11 +35,12 @@
       el-table-column(label="host" prop="host")
       el-table-column(label="basePath" prop="basePath")
       el-table-column(label="createAt" prop="createAt")
-      el-table-column(label="操作" width="190")
+      el-table-column(label="操作" width="280")
         template(v-slot="scoped")
           el-button(type="warning" icon="el-icon-edit" circle @click="handleEdit(scoped.row)")
           el-button(type="danger" icon="el-icon-delete" circle @click="handleDelete(scoped.row)")
-          el-button(type="plain" size="mini" round @click="handleAddGroup(scoped.row)") 添加分组
+          el-button(type="primary" size="mini" round @click="handleAddGroup(scoped.row)") 添加分组
+          el-button(type="success" size="mini" round @click="handleRefresh(scoped.row)") 更新数据
 
   el-dialog(:title="'添加'" :visible.sync="isShowAddDialog")
     el-form(label-width="6em")
@@ -115,6 +116,9 @@ export default class extends Vue {
     description: '',
     project: ''
   }
+  handleRefresh(project: any) {
+    this.$http.put(`/project/${project._id}/refresh`)
+  }
   handleSearch() {
     this.page.page = 1
     this.page.size = 10
@@ -168,13 +172,16 @@ export default class extends Vue {
     this.addGroupDialogData.project = projectItem._id
   }
   submitAddGroupDialog() {
-    this.$http.post(`/apiGroup`,{
-      ...this.addGroupDialogData
-    })
-    .then(res => {
-      this.isShowAddGroupDialog = false
-      this.$router.push(`/apiManage/group?project=${this.addGroupDialogData.project}`)
-    })
+    this.$http
+      .post(`/apiGroup`, {
+        ...this.addGroupDialogData
+      })
+      .then((res) => {
+        this.isShowAddGroupDialog = false
+        this.$router.push(
+          `/apiManage/group?project=${this.addGroupDialogData.project}`
+        )
+      })
   }
   handleSizeChange(val: number) {
     this.page.size = val

@@ -4,8 +4,8 @@
     el-form(inline label-width="7em")
       el-form-item(label="project")
         el-input(v-model="filter.project")
-      el-form-item(label="isEnable")
-        el-input(v-model="filter.isEnable")
+      el-form-item(label="name")
+        el-input(v-model="filter.name")
     el-form(label-width="5em")
       el-form-item
         el-button(type="primary" @click="handleSearch") search
@@ -74,7 +74,7 @@ export default class extends Vue {
   }
   filter = {
     project: '',
-    isEnable: ''
+    name: ''
   }
   isShowEditDialog: boolean = false
   editDialogData = {

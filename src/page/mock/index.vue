@@ -57,10 +57,10 @@
       el-form-item(label="类型")
         el-select(v-model="editDialogData.type")
           el-option(v-for="i in ['global', 'job', 'story', 'case', 'action']" :key="i" :value="i")
-      el-form-item(label="targetId")
+      el-form-item(label="targetId" v-if="editDialogData.type!=='global'")
         el-input(v-model="editDialogData.target")
       el-form-item(label="list")
-        el-button(type="info" v-for="(i,n) in editDialogData.list" :key="n" @click="handleDeleteMockListItem(editDialogData.list,n)") {{i}}
+        el-button(type="info" v-for="(i,n) in editDialogData.list" :key="n" @click="handleDeleteMockListItemInEditDialog(editDialogData,n)") {{i}}
         el-button(type="success" icon="el-icon-plus" @click="addMockList(editDialogData)")
     div(slot="footer")
       el-button(type="default" @click="isShowEditDialog=false") 取消
@@ -130,6 +130,9 @@ export default class extends Vue {
     this.editDialogData = { ...item }
     this.isShowEditDialog = true
   }
+  handleDeleteMockListItemInEditDialog(item: any, index: number) {
+    this.editDialogData.list.splice(index, 1)
+  }
   handleDeleteMockListItem(item: any, index: number) {
     this.$confirm(
       `此操作将永久删除该数据【${item.list[index]}】, 是否继续?`,
@@ -166,13 +169,12 @@ export default class extends Vue {
     this.$prompt('请输入新的内容', '提示', {
       confirmButtonText: '确定',
       cancelButtonText: '取消'
+    }).then(({ value }: any) => {
+      if (value && value.trim().length) {
+        this.editDialogData.list.push(value)
+        this.editDialogData.list = Array.from(new Set(this.editDialogData.list))
+      }
     })
-      .then(({ value }: any) => {
-        if(value && value.trim().length) {
-          this.editDialogData.list.push(value)
-          this.editDialogData.list = Array.from(new Set(this.editDialogData.list))
-        }
-      })
   }
   handleDelete(item: any) {
     this.$confirm('此操作将永久删除该数据, 是否继续?', '提示', {

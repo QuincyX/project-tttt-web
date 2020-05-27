@@ -161,7 +161,8 @@ export default class extends Vue {
         return this.$http.post('/job', {
           name: `【${item.name}】的执行任务`,
           description: value,
-          story: item._id,
+          targetType:"story",
+          targetId: item._id,
           trigger: '手动',
           type: '单次'
         })

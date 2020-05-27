@@ -61,11 +61,12 @@
       el-table-column(label="createAt" prop="createAt")
         template(v-slot="scoped")
           span {{scoped.row.createAt | formatLastDate}}
-      el-table-column(label="操作" width="300")
+      el-table-column(label="操作" width="380")
         template(v-slot="scoped")
-          el-button(type="success" icon="el-icon-check" @click="handleAddItemToCart(scoped.row)") 加入购物车
-          el-button(type="warning" icon="el-icon-edit" @click="handleEdit(scoped.row)") 编辑
-          el-button(type="danger" icon="el-icon-delete" @click="handleDelete(scoped.row)") 删除
+          el-button(type="success" size="mini" icon="el-icon-check" @click="handleTrigger(scoped.row)") 执行
+          el-button(type="success" size="mini" icon="el-icon-check" @click="handleAddItemToCart(scoped.row)") 加入story
+          el-button(type="warning" size="mini" icon="el-icon-edit" @click="handleEdit(scoped.row)") 编辑
+          el-button(type="danger" size="mini" icon="el-icon-delete" @click="handleDelete(scoped.row)") 删除
 
   el-dialog(:title="editDialogData._id?'编辑':'添加'" :visible.sync="isShowEditDialog")
     el-form(label-width="6em")
@@ -102,16 +103,16 @@
       el-button(type="primary" @click="handleSubmitEditDialog") 确定
 
   el-dialog(title="编辑输出规则" :visible.sync="isShowEditOutputDialog")
-    el-form(label-width="6em")
-      el-form-item(label="name")
+    el-form(label-width="8em")
+      el-form-item(label="输出字段")
         el-input(v-model="editOutputDialogData.name")
-      el-form-item(label="source")
+      el-form-item(label="来源字段名")
         el-input(v-model="editOutputDialogData.source")
-      el-form-item(label="target")
-        el-input(v-model="editOutputDialogData.target")
-      el-form-item(label="targetType")
+      el-form-item(label="输出目标类型")
         el-select(v-model="editOutputDialogData.targetType")
           el-option(v-for="(i,n) in ['global','job','story','case','action']" :key="n" :value="i")
+      el-form-item(label="target" v-if="!['global','case'].includes(editOutputDialogData.targetType)")
+        el-input(v-model="editOutputDialogData.target")
     div(slot="footer")
       el-button(type="default" @click="isShowEditOutputDialog=false") 取消
       el-button(type="primary" @click="handleSubmitEditOutputDialog") 确定
@@ -170,6 +171,25 @@ export default class extends Vue {
     source: '',
     target: '',
     targetType: 'case'
+  }
+  handleTrigger(item: any) {
+    this.$prompt('请输入任务备注', '提示', {
+      confirmButtonText: '确定',
+      cancelButtonText: '取消'
+    })
+      .then(({ value }: any) => {
+        return this.$http.post('/job', {
+          name: `【${item.name}】的执行任务`,
+          description: value,
+          targetType: 'case',
+          targetId: item._id,
+          trigger: '手动',
+          type: '单次'
+        })
+      })
+      .then(() => {
+        this.$router.push('/job')
+      })
   }
   handleAddOutput(action: any) {
     this.currentActionIdForEditOutput = action._id

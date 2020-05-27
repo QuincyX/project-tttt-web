@@ -13,7 +13,12 @@
           el-button(v-for="(i,n) in actionDetail.rule" :key="n" type="success" @click="handleDeleteRule(n)") {{i.name}}
           el-button(type="success" icon="el-icon-plus" @click="handleAddRule")
         el-form-item(label="输出规则")
-          el-button(v-for="(i,n) in actionDetail.output" :key="n" type="success" @click="handleDeleteOutput(n)") {{i.name}}
+          el-tooltip.paramItemContainer(placement="top" v-for="(i,n) in actionDetail.output" :key="n")
+            el-button(type="success" @click="handleDeleteOutput(n)") {{i.name}}
+            div(slot="content")
+              div 字段: {{i.name}}
+              div 来源: {{i.source}}
+              div 类型: {{i.targetType}}
           el-button(type="success" icon="el-icon-plus" @click="handleAddOutput")
 
         el-form-item(label="Query" v-if="copyApiDetail.query.length || actionDetail.query.length")
@@ -104,8 +109,8 @@ import { Vue, Component } from 'vue-property-decorator'
 import paramItem from '@/component/action/paramItem.vue'
 @Component({
   components: {
-    paramItem,
-  },
+    paramItem
+  }
 })
 export default class extends Vue {
   currentApiId: string = ''
@@ -119,7 +124,7 @@ export default class extends Vue {
     query: [],
     path: [],
     body: [],
-    header: [],
+    header: []
   }
   apiDetail: any = {
     _id: '',
@@ -130,7 +135,7 @@ export default class extends Vue {
     query: [],
     path: [],
     body: [],
-    header: [],
+    header: []
   }
   actionDetail: any = {
     api: '',
@@ -143,17 +148,17 @@ export default class extends Vue {
     body: <Array<any>>[],
     header: <Array<any>>[],
     rule: <Array<any>>[],
-    output: <Array<any>>[],
+    output: <Array<any>>[]
   }
   addRuleData = {
     name: '',
-    rule: '',
+    rule: ''
   }
   addOutputData = {
     name: '',
     source: '',
     target: '',
-    targetType: '',
+    targetType: ''
   }
   ruleList: any[] = []
   isShowAddRuleDialog: boolean = false
@@ -162,7 +167,7 @@ export default class extends Vue {
   isShowMockPickDialog: boolean = false
   addMockData: any = {
     name: '',
-    type: '',
+    type: ''
   }
 
   handleAddNewMock() {
@@ -171,8 +176,8 @@ export default class extends Vue {
       query: {
         action: 'add',
         type: 'global',
-        name: this.addMockData.name,
-      },
+        name: this.addMockData.name
+      }
     })
   }
 
@@ -188,7 +193,7 @@ export default class extends Vue {
     // @ts-ignore
     this.actionDetail[this.addMockData.type].push({
       name: this.addMockData.name,
-      mock: mockItem._id,
+      mock: mockItem._id
     })
     // @ts-ignore
     const paramIndexForApiDetail = this.apiDetail[
@@ -202,7 +207,7 @@ export default class extends Vue {
     )
     this.addMockData = {
       name: '',
-      type: '',
+      type: ''
     }
 
     this.isShowMockPickDialog = false
@@ -210,7 +215,7 @@ export default class extends Vue {
   async handleAddMock(item: any, type: string) {
     this.addMockData = { name: item.name, type }
     this.mockList = await this.$http.get('/mock', {
-      params: { size: 0, type: 'global', name: item.name },
+      params: { size: 0, type: 'global', name: item.name }
     })
     this.isShowMockPickDialog = true
   }
@@ -235,13 +240,16 @@ export default class extends Vue {
     await this.getRuleList()
     this.addRuleData = {
       name: '',
-      rule: '',
+      rule: ''
     }
     this.isShowAddRuleDialog = true
   }
+  getActionResponse(): any {
+    return this.$http.get(`/action/${this.$route.params.id}/response`)
+  }
   handleDeleteRule(index: number) {
     this.$confirm('此操作将删除该数据, 是否继续?', '提示', {
-      type: 'warning',
+      type: 'warning'
     }).then(() => {
       this.actionDetail.rule.splice(index, 1)
     })
@@ -255,13 +263,13 @@ export default class extends Vue {
       name: '',
       source: '',
       target: '',
-      targetType: '',
+      targetType: ''
     }
     this.isShowAddOutputDialog = true
   }
   handleDeleteOutput(index: number) {
     this.$confirm('此操作将删除该数据, 是否继续?', '提示', {
-      type: 'warning',
+      type: 'warning'
     }).then(() => {
       this.actionDetail.output.splice(index, 1)
     })
