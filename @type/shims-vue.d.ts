@@ -10,3 +10,12 @@ declare module 'vue/types/vue' {
     $store: Store<any>
   }
 }
+
+declare global {
+  interface PageQuery {
+    page: number
+    size: number
+    total: number
+  }
+}
+
