@@ -61,10 +61,11 @@
       el-table-column(label="createAt" prop="createAt")
         template(v-slot="scoped")
           span {{scoped.row.createAt | formatLastDate}}
-      el-table-column(label="操作" width="380")
+      el-table-column(label="操作" width="500")
         template(v-slot="scoped")
           el-button(type="success" size="mini" icon="el-icon-check" @click="handleTrigger(scoped.row)") 执行
-          el-button(type="success" size="mini" icon="el-icon-check" @click="handleAddItemToCart(scoped.row)") 加入story
+          el-button(type="success" size="mini" icon="el-icon-check" @click="handleAddItemToCart(scoped.row)") 加入购物车
+          el-button(type="warning" size="mini" @click="handleAddOtherCase(scoped.row)") + otherStory
           el-button(type="warning" size="mini" icon="el-icon-edit" @click="handleEdit(scoped.row)") 编辑
           el-button(type="danger" size="mini" icon="el-icon-delete" @click="handleDelete(scoped.row)") 删除
 
@@ -134,7 +135,14 @@
             el-button.rightBtn(type="danger" icon="el-icon-delete" size="mini" @click="$store.commit('case/deletePicked', i)")
       .extendContainer
         el-button(type="success" @click="$router.push('/actionManage/story?action=add')") 生成故事
-
+  el-dialog(title="添加到其他story" :visible.sync="isShowOtherCase")
+      el-table(:data="storyList" )
+        el-table-column(prop="name" label="name")
+        el-table-column(prop="description" label="description" )
+        el-table-column(label="操作" width="100")
+          template(v-slot="scoped")
+            el-button( size="mini" type="success" icon="el-icon-plus" @click="addHandleStory(scoped.row)") 加入
+        //- el-table-column(prop="type" label="type" width="180")
 </template>
 
 <script lang="ts">
@@ -174,6 +182,9 @@ export default class extends Vue {
     target: '',
     targetType: 'case',
   }
+  storyList = []
+  addStoryItem: any = {}
+  isShowOtherCase: boolean = false
   handleTrigger(item: any) {
     this.$prompt('请输入任务备注', '提示', {
       confirmButtonText: '确定',
@@ -285,6 +296,23 @@ export default class extends Vue {
         })
       })
   }
+  handleAddOtherCase(item: any) {
+    this.getStoryList()
+    this.addStoryItem = item
+    this.isShowOtherCase = true
+  }
+  addHandleStory(row: any) {
+    this.$http
+      .put(`/story/${row._id}`, {
+        name: row.name,
+        description: row.description,
+        caseList: [...row.caseList, this.addStoryItem._id],
+      })
+      .then((res) => {
+        this.isShowOtherCase = false
+        this.getStoryList()
+      })
+  }
   handleSearch() {
     this.page.page = 1
     this.page.size = 10
@@ -308,6 +336,12 @@ export default class extends Vue {
         this.page = page
         this.list = list
       })
+  }
+  getStoryList() {
+    this.$http.get('/story', { params: { size: 0 } }).then((res: any) => {
+      this.storyList = res
+      // console.log(this.storyList)
+    })
   }
   mounted(): void {
     this.getList()
