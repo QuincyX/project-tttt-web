@@ -8,6 +8,7 @@ el-menu.menuContainer(mode="horizontal" router background-color="#100d23" text-c
     el-menu-item(index="/apiManage/group") API分组
     el-menu-item(index="/apiManage/model") 数据模型
     el-menu-item(index="/apiManage/api") API列表
+    el-menu-item(index="/apiManage/apiTest") API测试
   el-submenu(index="2")
     template(slot="title") 测试用例
     el-menu-item(index="/actionManage/action") 动作管理
@@ -27,7 +28,7 @@ el-menu.menuContainer(mode="horizontal" router background-color="#100d23" text-c
 import { Vue, Component } from 'vue-property-decorator'
 
 @Component({
-  components: {}
+  components: {},
 })
 export default class extends Vue {
   mounted(): void {}
