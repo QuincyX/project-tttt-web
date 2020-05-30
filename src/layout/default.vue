@@ -1,7 +1,7 @@
 <template lang="pug">
 div
   menu-bar
-  router-view
+  router-view#innerView
   .copyRight BY's TTT ©2020
 
 </template>
@@ -19,6 +19,9 @@ export default class extends Vue {
 </script>
 
 <style lang="less" scoped>
+#innerView {
+  overflow-y: auto;
+}
 .copyRight {
   .center;
   .hh(30px);

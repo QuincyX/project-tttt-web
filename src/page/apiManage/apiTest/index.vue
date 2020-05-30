@@ -1,5 +1,5 @@
 <template lang="pug">
-.page
+.page.cardList
   el-card
     el-row(:gutter="20")
       el-col(:span="8")
@@ -21,7 +21,7 @@
   el-card(v-if="actionDetail.api")
     div(slot="header")
       .cardHeader 名称: {{actionDetail.name}}
-      el-button.headerRightButton(type="success" @click="handleSubmitAddAction") 执行测试  
+      el-button.headerRightButton(type="success" @click="handleSubmitAddAction") 执行测试
     el-form(label-width="8em" size="medium")
       el-form-item(label="请求地址") {{apiDetail.method.toUpperCase()}} http://{{baseUrl}}{{apiDetail.url}}
       el-form-item(label="请求参数")

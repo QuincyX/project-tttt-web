@@ -73,7 +73,9 @@ export default class extends Vue {
   color: @success;
 }
 .section {
-  // .border;
+  // .border(@success);
+  width: 1000px;
+  margin: 0 auto;
   .marginBottom(30px);
   .sectionHeader {
     .center;

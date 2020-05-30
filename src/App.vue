@@ -3,7 +3,7 @@
   .bg
   .bg
   .bg
-  router-view#innerView
+  router-view
 
 </template>
 

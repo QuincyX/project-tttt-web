@@ -1,5 +1,5 @@
 <template lang="pug">
-.page
+.page.cardList
   el-card
     el-row(:gutter="20")
       el-col(:span="8")
