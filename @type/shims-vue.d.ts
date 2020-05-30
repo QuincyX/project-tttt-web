@@ -6,6 +6,7 @@ declare module 'vue/types/vue' {
   interface Vue {
     $router: VueRouter
     $route: Route
+    $curl: AxiosInstance
     $http: AxiosInstance
     $store: Store<any>
   }
