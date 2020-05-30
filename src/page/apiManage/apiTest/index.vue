@@ -21,8 +21,7 @@
   el-card(v-if="actionDetail.api")
     div(slot="header")
       .cardHeader 名称: {{actionDetail.name}}
-      el-button.headerRightButton(type="success" @click="handleSubmitAddAction") 执行测试
-      
+      el-button.headerRightButton(type="success" @click="handleSubmitAddAction") 执行测试  
     el-form(label-width="8em" size="medium")
       el-form-item(label="请求地址") {{apiDetail.method.toUpperCase()}} http://{{baseUrl}}{{apiDetail.url}}
       el-form-item(label="请求参数")
@@ -55,6 +54,8 @@
               el-input(placeholder="请输入内容" v-model="i.value" class="input-with-select" @blur="queryValue(i.name,n,'path')")
                 el-button(slot="prepend" style = 'width:150px') {{i.name}}
                 el-button(slot="append" icon="el-icon-plus"  @click="handleAddMock(i,n,'path')")
+      el-form-item(label="测试信息")
+        div.respone {{responeData}}
   el-drawer(title="选择数据定义" :visible.sync="isShowMockPickDialog")
     .mockListContainer
       .mockList
@@ -115,6 +116,7 @@ export default class extends Vue {
     body: [],
     header: [],
   }
+  responeData: any = ''
   actionDetail = {
     api: '',
     name: '',
@@ -211,12 +213,18 @@ export default class extends Vue {
     this.isShowMockPickDialog = true
   }
   handleSubmitAddAction() {
-    const bodyRaw = JSON.parse(
-      this.subItem.body
-        .replace(/\ +/g, '')
-        .replace(/\n/g, '')
-        .replace(/\r/g, '')
-    )
+    let bodyRaw = ''
+    try {
+    } catch (error) {}
+    if (this.subItem.body) {
+      let bodyRaw = JSON.parse(
+        this.subItem.body
+          .replace(/\ +/g, '')
+          .replace(/\n/g, '')
+          .replace(/\r/g, '')
+      )
+    }
+
     let url = this.apiDetail.url
     Object.keys(this.subItem.path).forEach((path: any) => {
       url = url.replace(`{${path}}`, this.subItem.path[path])
@@ -229,7 +237,7 @@ export default class extends Vue {
       headers: this.subItem.header,
       body: bodyRaw,
     }).then((res: any) => {
-      console.log(res)
+      this.responeData = res
     })
   }
   handleDeleteMockListItemInEditDialog(item: any, index: number) {
@@ -363,6 +371,12 @@ export default class extends Vue {
     .padding;
     .center;
   }
+}
+.respone {
+  padding: 5px;
+  border: 1px solid #7e5db2;
+  border-radius: 5px;
+  min-height: 50px;
 }
 .token {
   display: flex;
