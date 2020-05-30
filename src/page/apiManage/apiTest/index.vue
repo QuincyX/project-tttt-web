@@ -21,11 +21,11 @@
   el-card(v-if="actionDetail.api")
     div(slot="header")
       .cardHeader 名称: {{actionDetail.name}}
-      el-button.headerRightButton(type="success" @click="handleSubmitAddAction") 执行测试
+      el-button.headerRightButton(type="success" @click="handleSubmitAjax" v-loading.fullscreen.lock="isApiLoading") 执行测试
     el-form(label-width="8em" size="medium")
       el-form-item(label="请求地址") {{apiDetail.method.toUpperCase()}} http://{{baseUrl}}{{apiDetail.url}}
       el-form-item(label="请求参数")
-        el-tabs(v-model="activeName" type="card" @tab-click="handleClick")
+        el-tabs(v-model="activeName" type="card")
           el-tab-pane(name="Header")
             span(slot='label') Header
               i {{" "+ apiDetail.header.length}}
@@ -55,7 +55,7 @@
                 el-button(slot="prepend" style = 'width:150px') {{i.name}}
                 el-button(slot="append" icon="el-icon-plus"  @click="handleAddMock(i,n,'path')")
       el-form-item(label="测试信息")
-        div.respone {{responeData}}
+        pre.respone {{responseData}}
   el-drawer(title="选择数据定义" :visible.sync="isShowMockPickDialog")
     .mockListContainer
       .mockList
@@ -94,7 +94,7 @@ import { Vue, Component } from 'vue-property-decorator'
 import paramItem from '@/component/action/paramItem.vue'
 
 @Component({
-  components: { paramItem },
+  components: { paramItem }
 })
 export default class extends Vue {
   projectList: any[] = []
@@ -105,7 +105,8 @@ export default class extends Vue {
   currentApiId: string = ''
   input3: any = ''
   activeName: any = 'Header'
-  apiDetail = {
+  isApiLoading: boolean = false
+  apiDetail: any = {
     _id: '',
     name: '',
     method: '',
@@ -114,10 +115,10 @@ export default class extends Vue {
     query: [],
     path: [],
     body: [],
-    header: [],
+    header: []
   }
-  responeData: any = ''
-  actionDetail = {
+  responseData: any = ''
+  actionDetail: any = {
     api: '',
     name: '',
     method: '',
@@ -128,19 +129,19 @@ export default class extends Vue {
     body: <Array<any>>[],
     header: <Array<any>>[],
     rule: <Array<any>>[],
-    output: <Array<any>>[],
+    output: <Array<any>>[]
   }
   mockList: any[] = []
   isShowMockPickDialog: boolean = false
   addMockData: any = {
     name: '',
-    type: '',
+    type: ''
   }
   subItem: any = {
     query: {},
     path: {},
     body: '',
-    header: {},
+    header: {}
   }
   isShowEditDialog: boolean = false
   editDialogData: any = {
@@ -149,18 +150,24 @@ export default class extends Vue {
     description: '',
     type: 'global',
     target: '',
-    list: [],
+    list: []
   }
   pramList: any = ['header', 'body', 'query', 'path']
+  get baseUrl(): string {
+    const currentProject = this.projectList.find(
+      (o) => o._id === this.currentProjectId
+    )
+    return currentProject.host
+  }
   async handleSubmitDialog() {
     let _that = this
     this.$http
       .post(`/mock`, {
-        ...this.editDialogData,
+        ...this.editDialogData
       })
       .then((res) => {
         return this.$http.get('/mock', {
-          params: { size: 0, type: 'global', name: this.addMockData.name },
+          params: { size: 0, type: 'global', name: this.addMockData.name }
         })
       })
       .then((res: any) => {
@@ -168,19 +175,10 @@ export default class extends Vue {
         this.isShowEditDialog = false
       })
   }
-  get baseUrl(): string {
-    const currentProject = this.projectList.find(
-      (o) => o._id === this.currentProjectId
-    )
-    return currentProject.host
-  }
-  handleClick(tab: any, event: any) {
-    // console.log(tab, event)
-  }
   addMockList(item: any) {
     this.$prompt('请输入新的内容', '提示', {
       confirmButtonText: '确定',
-      cancelButtonText: '取消',
+      cancelButtonText: '取消'
     }).then(({ value }: any) => {
       if (value && value.trim().length) {
         this.editDialogData.list.push(value)
@@ -189,16 +187,14 @@ export default class extends Vue {
     })
   }
   handlePickMock(mockItem: any) {
-    // @ts-ignore
     this.apiDetail[this.addMockData.type][this.addMockData.index].value =
       mockItem.list[Math.floor(Math.random() * mockItem.list.length)]
-    // @ts-ignore
     this.subItem[this.addMockData.type][this.addMockData.name] = <any>(
       this.apiDetail[this.addMockData.type][this.addMockData.index].value
     )
     this.addMockData = {
       name: '',
-      type: '',
+      type: ''
     }
     this.isShowMockPickDialog = false
   }
@@ -208,37 +204,43 @@ export default class extends Vue {
   async handleAddMock(item: any, index: any, type: string) {
     this.addMockData = { name: item.name, type, index }
     this.mockList = await this.$http.get('/mock', {
-      params: { size: 0, type: 'global', name: item.name },
+      params: { size: 0, type: 'global', name: item.name }
     })
     this.isShowMockPickDialog = true
   }
-  handleSubmitAddAction() {
+  handleSubmitAjax() {
+    this.isApiLoading = true
     let bodyRaw = ''
     try {
-    } catch (error) {}
-    if (this.subItem.body) {
-      let bodyRaw = JSON.parse(
-        this.subItem.body
-          .replace(/\ +/g, '')
-          .replace(/\n/g, '')
-          .replace(/\r/g, '')
-      )
+      if (this.subItem.body) {
+        bodyRaw = JSON.parse(
+          this.subItem.body
+            .replace(/\ +/g, '')
+            .replace(/\n/g, '')
+            .replace(/\r/g, '')
+        )
+      }
+    } catch (error) {
+      bodyRaw = ''
     }
-
     let url = this.apiDetail.url
     Object.keys(this.subItem.path).forEach((path: any) => {
       url = url.replace(`{${path}}`, this.subItem.path[path])
     })
     // @ts-ignore
     this.$curl({
-      method: this.apiDetail.method.toUpperCase(),
+      method: this.apiDetail.method,
       url: `http://${this.baseUrl}${url}`,
       query: this.subItem.query,
       headers: this.subItem.header,
-      body: bodyRaw,
-    }).then((res: any) => {
-      this.responeData = res
+      body: bodyRaw
     })
+      .then((res: any) => {
+        this.responseData = res
+      })
+      .finally(() => {
+        this.isApiLoading = false
+      })
   }
   handleDeleteMockListItemInEditDialog(item: any, index: number) {
     this.editDialogData.list.splice(index, 1)
