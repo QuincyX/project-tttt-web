@@ -1,7 +1,7 @@
 <template lang="pug">
 .page.cardList
-  el-card
-    el-row(:gutter="20")
+  el-card.apiPickerCard(:class="{active:isShowApiPicker}")
+    el-row(:gutter="20" v-show="isShowApiPicker")
       el-col(:span="8")
         .columnContainer
           .header select project
@@ -16,14 +16,15 @@
         .columnContainer
           .header select api
           .list
-            .item(v-for="(i,n) in apiList" :key="n" :class="{active:(currentApiId===i._id)}" @click="handleChangeApi(i)") {{i.name}}
-    .controlBar
+            .item(v-for="(i,n) in apiList" :key="n" :class="{active:($route.query.api===i._id)}" @click="handleChangeApi(i)") {{i.name}}
+    .controlBar(@click="isShowApiPicker=!isShowApiPicker")
       i.el-icon-edit
+      .name {{isShowApiPicker?'折叠':'选择API'}}
 
   el-card(v-if="actionDetail.api")
     div(slot="header")
       .cardHeader 名称: {{actionDetail.name}}
-      el-button.headerRightButton(type="success" @click="handleSubmitAjax" v-loading.fullscreen.lock="isApiLoading") 执行测试
+      el-button.headerRightButton(type="success" @click="handleSubmitAjax" v-loading.fullscreen.lock="isApiLoading") 执行
     el-form(label-width="8em" size="medium")
       el-form-item(label="请求地址") {{apiDetail.method.toUpperCase()}} http://{{baseUrl}}{{apiDetail.url}}
       el-form-item(label="请求参数")
@@ -34,25 +35,25 @@
             div.inputItem(v-for="(i,n) in apiDetail.header" :key="n")
               .label {{i.name}}
               el-input(placeholder="请输入内容" v-model="i.value" class="input-with-select" @blur="queryValue(i.name,n,'header')")
-                el-button(slot="append" icon="el-icon-plus"  @click="handleAddMock(i,n,'header')")
+                el-button(slot="append" icon="el-icon-plus"  @click="handleAddMock(i,n,'header')") 选择Mock
           el-tab-pane(name="Body")
             span(slot='label') Body
             div.inputItem
-              el-input(type="textarea" placeholder="请输入内容" :rows="10" v-model="subItem.body" class="input-with-select")
+              el-input(type="textarea" placeholder="请输入内容" :rows="6" autosize v-model="subItem.body" class="input-with-select")
           el-tab-pane(name="Query")
             span(slot='label') Query
               i {{" "+ apiDetail.query.length}}
             div.inputItem(v-for="(i,n) in apiDetail.query" :key="n")
-              .label {{i.query}}
+              .label {{i.name}}
               el-input(placeholder="请输入内容" v-model="i.value" class="input-with-select" @blur="queryValue(i.name,n,'query')")
-                el-button(slot="append" icon="el-icon-plus"  @click="handleAddMock(i,n,'query')")
+                el-button(slot="append" icon="el-icon-plus"  @click="handleAddMock(i,n,'query')") 选择Mock
           el-tab-pane(name="Path")
             span(slot='label') Path
               i {{" "+ apiDetail.path.length}}
             div.inputItem(v-for="(i,n) in apiDetail.path" :key="n")
               .label {{i.name}}
               el-input(placeholder="请输入内容" v-model="i.value" class="input-with-select" @blur="queryValue(i.name,n,'path')")
-                el-button(slot="append" icon="el-icon-plus"  @click="handleAddMock(i,n,'path')")
+                el-button(slot="append" icon="el-icon-plus"  @click="handleAddMock(i,n,'path')") 选择Mock
       el-form-item(label="Response")
         pre {{responseData}}
       el-form-item(label="Curl")
@@ -91,7 +92,7 @@
 </template>
 
 <script lang="ts">
-import { Vue, Component } from 'vue-property-decorator'
+import { Vue, Component, Watch } from 'vue-property-decorator'
 import paramItem from '@/component/action/paramItem.vue'
 import { getCurlScript } from '@/util/index'
 
@@ -104,7 +105,6 @@ export default class extends Vue {
   groupList: any[] = []
   currentGroupId: string = ''
   apiList: any[] = []
-  currentApiId: string = ''
   input3: any = ''
   activeName: any = 'Header'
   isApiLoading: boolean = false
@@ -142,7 +142,7 @@ export default class extends Vue {
   subItem: any = {
     query: {},
     path: {},
-    body: '',
+    body: `{\n  \n}`,
     header: {},
   }
   isShowEditDialog: boolean = false
@@ -156,6 +156,7 @@ export default class extends Vue {
   }
   curlScript: string = ''
   pramList: any = ['header', 'body', 'query', 'path']
+  isShowApiPicker: boolean = false
   get baseUrl(): string {
     const currentProject = this.projectList.find(
       (o) => o._id === this.currentProjectId
@@ -264,10 +265,16 @@ export default class extends Vue {
     this.getApiList()
   }
   handleChangeApi(item: any) {
-    this.currentApiId = item._id
+    this.$router.push(`/apiManage/apiTest?api=${item._id}`)
+    this.isShowApiPicker = false
+  }
+  @Watch('$route')
+  async getApiInfo() {
+    const item: any = await this.$http.get(`/apiItem/${this.$route.query.api}`)
     this.apiDetail = { ...JSON.parse(JSON.stringify(item)), body: '' }
     this.actionDetail.api = item._id
     this.actionDetail.name = item.name
+    this.currentProjectId = item.project
   }
   async getProjectList() {
     this.projectList = await this.$http.get('/project?size=0')
@@ -291,7 +298,6 @@ export default class extends Vue {
       this.pramList.map((type: any) => {
         this.addApiValue(this.apiList[0][type])
       })
-      this.handleChangeApi(this.apiList[0])
     }
   }
   addApiValue(item: any) {
@@ -301,6 +307,11 @@ export default class extends Vue {
   }
   mounted(): void {
     this.getProjectList()
+    if (this.$route.query.api) {
+      this.getApiInfo()
+    } else {
+      this.isShowApiPicker = true
+    }
   }
 }
 </script>
@@ -421,6 +432,40 @@ export default class extends Vue {
         background: @yellow;
         color: @primary;
       }
+    }
+  }
+}
+.apiPickerCard {
+  min-height: 50px;
+  height: 50px;
+  padding-top: 0;
+  * {
+    .trans;
+  }
+  .controlBar {
+    .center;
+    .padding;
+    .flexCenter;
+    .pointer;
+    margin-top: -15px;
+    margin-bottom: 0;
+    .name {
+      .inline;
+      width: 0;
+      word-break: keep-all;
+      overflow: hidden;
+    }
+    &:hover {
+      .name {
+        width: 100px;
+      }
+    }
+  }
+  &.active {
+    height: 410px;
+    .controlBar {
+      margin-top: 0;
+      margin-bottom: -20px;
     }
   }
 }

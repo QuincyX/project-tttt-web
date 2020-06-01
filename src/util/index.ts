@@ -57,7 +57,7 @@ export function getCurlScript(payload: any) {
   if (payload) {
     const headers = payload?.config?.headers || {}
     let curl = `curl -X ${payload?.config?.method.toUpperCase()} `
-    curl += `'${payload?.config?.baseURL}${payload?.config?.url}' `
+    curl += `'${payload?.config?.baseURL || ''}${payload?.config?.url}' `
     for (let i in headers) {
       if (i.toLowerCase() !== 'content-length') {
         curl += `-H '${i}: ${headers[i]}' `
