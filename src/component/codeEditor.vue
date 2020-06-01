@@ -5,32 +5,34 @@
 </template>
 
 <script lang="ts">
-import { Vue, Component } from 'vue-property-decorator'
+import { Vue, Component, Prop } from 'vue-property-decorator'
 import * as monaco from 'monaco-editor'
 
-@Component({
-  components: {}
-})
+@Component({})
 export default class extends Vue {
   editorInstance: any = null
+  @Prop() value!: string
   mounted(): void {
-    this.editorInstance = monaco.editor.create(
-      <HTMLElement>this.$refs.codeEditor,
-      {
-        value: ['function x() {', '\tconsole.log("Hello world!");', '}'].join(
-          '\n'
-        ),
-        theme: 'vs-dark',
-        language: 'typescript'
-      }
-    )
+    // @ts-ignore
+    this.editorInstance = monaco.editor.create(this.$refs.codeEditor, {
+      value: this.value || `{\n}`,
+      theme: 'vs-dark',
+      language: 'json'
+    })
+    this.editorInstance.onDidChangeModelContent((event: any) => {
+      const newValue = this.editorInstance.getValue()
+      this.$emit('input', newValue)
+    })
+  }
+  beforeDestroy() {
+    this.editorInstance?.dispose()
   }
 }
 </script>
 
 <style lang="less" scoped>
 .monacoEditor {
-  width: 800px;
-  height: 300px;
+  width: 500px;
+  min-height: 200px;
 }
 </style>
