@@ -2,20 +2,18 @@
 .page.cardList
   el-card
     el-form(inline label-width="7em")
-      el-form-item(label="name")
+      el-form-item(label="名称")
         el-input(v-model="filter.name")
-      el-form-item(label="api")
+      el-form-item(label="关联API的ID")
         el-input(v-model="filter.api")
-      el-form-item(label="type")
-       el-input(v-model="filter.type")
-      el-form-item(label="isEnable")
+      el-form-item(label="状态")
         el-select(v-model='filter.isEnable')
           el-option(value="") 全部
           el-option(v-for="i in ['true','false']" :key="i" :value="i")
-    el-form(label-width="5em")
+    el-form(label-width="7em")
       el-form-item
-        el-button(type="primary" icon="el-icon-search" @click="handleSearch") search
-        el-button(type="success" icon="el-icon-plus" @click="$router.push('/actionManage/action/add')") add
+        el-button(type="primary" icon="el-icon-search" @click="handleSearch") 查询
+        el-button(type="success" icon="el-icon-plus" @click="$router.push('/actionManage/action/add')") 添加
 
   el-card.fullCard
     el-pagination(

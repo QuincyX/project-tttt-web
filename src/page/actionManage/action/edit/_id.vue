@@ -1,95 +1,95 @@
 <template lang="pug">
-  <div>
-    el-card
-      div.slot_header(slot="header")
-        .cardHeader API: {{actionDetail.api}}
-        el-button.headerRightButton(type="success" @click="handleSubmitAddAction") Submit
-      el-form(label-width="8em" size="medium")
-        el-form-item(label="名称")
-          el-input(v-model="actionDetail.name")
-        el-form-item(label="描述")
-          el-input(v-model="actionDetail.description")
-        el-form-item(label="验证规则")
-          el-button(v-for="(i,n) in actionDetail.rule" :key="n" type="success" @click="handleDeleteRule(n)") {{i.name}}
-          el-button(type="success" icon="el-icon-plus" @click="handleAddRule")
-        el-form-item(label="输出规则")
-          el-tooltip.paramItemContainer(placement="top" v-for="(i,n) in actionDetail.output" :key="n")
-            el-button(type="success" @click="handleDeleteOutput(n)") {{i.name}}
-            div(slot="content")
-              div 字段: {{i.name}}
-              div 来源: {{i.source}}
-              div 类型: {{i.targetType}}
-          el-button(type="success" icon="el-icon-plus" @click="handleAddOutput")
+.page.cardList
+  el-card
+    div.slot_header(slot="header")
+      .cardHeader API: {{actionDetail.api}}
+      el-button.headerRightButton(type="success" @click="handleSubmitEdit") 提交修改
+    el-form(label-width="8em" size="medium")
+      el-form-item(label="名称")
+        el-input(v-model="actionDetail.name")
+      el-form-item(label="描述")
+        el-input(v-model="actionDetail.description")
+      el-form-item(label="验证规则")
+        el-button(v-for="(i,n) in actionDetail.rule" :key="n" type="success" @click="handleDeleteRule(n)") {{i.name}}
+        el-button(type="success" icon="el-icon-plus" @click="handleAddRule")
+      el-form-item(label="输出规则")
+        el-tooltip.paramItemContainer(placement="top" v-for="(i,n) in actionDetail.output" :key="n")
+          el-button(type="success" @click="handleDeleteOutput(n)") {{i.name}}
+          div(slot="content")
+            div 字段: {{i.name}}
+            div 来源: {{i.source}}
+            div 类型: {{i.targetType}}
+        el-button(type="success" icon="el-icon-plus" @click="handleAddOutput")
 
-        el-form-item(label="Query" v-if="copyApiDetail.query.length || actionDetail.query.length")
-          .paramListContainer
-            .paramList.picked
-              .paramListHeader 已添加
-              .list
-                paramItem(v-for="(i,n) in actionDetail.query" :key="n" :detail="i" @click="handleDeleteMock(i,n,'query')")
-            .paramList.waiting(v-if="copyApiDetail.query.length")
-              .paramListHeader 待添加字段
-              .list
-                paramItem(v-for="(i,n) in copyApiDetail.query" :key="n" :detail="i" @click="handleAddMock(i,'query')")
+      el-form-item(label="Query" v-if="copyApiDetail.query.length || actionDetail.query.length")
+        .paramListContainer
+          .paramList.picked
+            .paramListHeader 已添加
+            .list
+              paramItem(v-for="(i,n) in actionDetail.query" :key="n" :detail="i" @click="handleDeleteMock(i,n,'query')")
+          .paramList.waiting(v-if="copyApiDetail.query.length")
+            .paramListHeader 待添加字段
+            .list
+              paramItem(v-for="(i,n) in copyApiDetail.query" :key="n" :detail="i" @click="handleAddMock(i,'query')")
 
-        el-form-item(label="Body" v-if="copyApiDetail.body.length || actionDetail.body.length")
-          .paramListContainer
-            .paramList.picked
-              .paramListHeader 已添加
-              .list
-                paramItem(v-for="(i,n) in actionDetail.body" :key="n" :detail="i" @click="handleDeleteMock(i,n,'body')")
-            .paramList.waiting()
-              .paramListHeader 待添加字段
-              .list
-                paramItem(v-for="(i,n) in copyApiDetail.body" :key="n" :detail="i" @click="handleAddMock(i,'body')")
+      el-form-item(label="Body" v-if="copyApiDetail.body.length || actionDetail.body.length")
+        .paramListContainer
+          .paramList.picked
+            .paramListHeader 已添加
+            .list
+              paramItem(v-for="(i,n) in actionDetail.body" :key="n" :detail="i" @click="handleDeleteMock(i,n,'body')")
+          .paramList.waiting()
+            .paramListHeader 待添加字段
+            .list
+              paramItem(v-for="(i,n) in copyApiDetail.body" :key="n" :detail="i" @click="handleAddMock(i,'body')")
 
-        el-form-item(label="Path" v-if="copyApiDetail.path.length || actionDetail.path.length")
-          .paramListContainer
-            .paramList.picked
-              .paramListHeader 已添加
-              .list
-                paramItem(v-for="(i,n) in actionDetail.path" :key="n" :detail="i" @click="handleDeleteMock(i,n,'query')")
-            .paramList.waiting()
-              .paramListHeader 待添加字段
-              .list
-                paramItem(v-for="(i,n) in copyApiDetail.path" :key="n" :detail="i" @click="handleAddMock(i,'path')")
+      el-form-item(label="Path" v-if="copyApiDetail.path.length || actionDetail.path.length")
+        .paramListContainer
+          .paramList.picked
+            .paramListHeader 已添加
+            .list
+              paramItem(v-for="(i,n) in actionDetail.path" :key="n" :detail="i" @click="handleDeleteMock(i,n,'query')")
+          .paramList.waiting()
+            .paramListHeader 待添加字段
+            .list
+              paramItem(v-for="(i,n) in copyApiDetail.path" :key="n" :detail="i" @click="handleAddMock(i,'path')")
 
-        el-form-item(label="Header" v-if="copyApiDetail.header.length || actionDetail.header.length")
-          .paramListContainer
-            .paramList.picked
-              .paramListHeader 已添加
-              .list
-                paramItem(v-for="(i,n) in actionDetail.header" :key="n" :detail="i" @click="handleDeleteMock(i,n,'header')")
-            .paramList.waiting(v-if="copyApiDetail.header.length")
-              .paramListHeader 待添加字段
-              .list
-                paramItem(v-for="(i,n) in copyApiDetail.header" :key="n" :detail="i" @click="handleAddMock(i,'header')")
-    el-dialog(title="添加验证规则" :visible.sync="isShowAddRuleDialog")
-      el-form(label-width="8em")
-        el-form-item(label="字段名")
-          el-input(v-model="addRuleData.name")
-        el-form-item(label="输出规则")
-          el-select(v-model="addRuleData.rule")
-            el-option(v-for="(i,n) in ruleList" :key="n" :label="`【${i.name}】${i.description}`" :value="i._id")
-      div(slot="footer")
-        el-button(type="default" @click="isShowAddRuleDialog=false") 取消
-        el-button(type="primary" @click="handleSubmitAddRule") 确定
+      el-form-item(label="Header" v-if="copyApiDetail.header.length || actionDetail.header.length")
+        .paramListContainer
+          .paramList.picked
+            .paramListHeader 已添加
+            .list
+              paramItem(v-for="(i,n) in actionDetail.header" :key="n" :detail="i" @click="handleDeleteMock(i,n,'header')")
+          .paramList.waiting(v-if="copyApiDetail.header.length")
+            .paramListHeader 待添加字段
+            .list
+              paramItem(v-for="(i,n) in copyApiDetail.header" :key="n" :detail="i" @click="handleAddMock(i,'header')")
+  el-dialog(title="添加验证规则" :visible.sync="isShowAddRuleDialog")
+    el-form(label-width="8em")
+      el-form-item(label="字段名")
+        el-input(v-model="addRuleData.name")
+      el-form-item(label="输出规则")
+        el-select(v-model="addRuleData.rule")
+          el-option(v-for="(i,n) in ruleList" :key="n" :label="`【${i.name}】${i.description}`" :value="i._id")
+    div(slot="footer")
+      el-button(type="default" @click="isShowAddRuleDialog=false") 取消
+      el-button(type="primary" @click="handleSubmitAddRule") 确定
 
-    el-dialog(title="添加输出规则" :visible.sync="isShowAddOutputDialog")
-      el-form(label-width="8em")
-        el-form-item(label="字段名")
-          el-input(v-model="addOutputData.name")
-        el-form-item(label="输出规则")
-          el-input(v-model="addOutputData.source")
-        el-form-item(label="输出目标")
-          el-input(v-model="addOutputData.targetType")
-        el-form-item(label="目标ID")
-          el-input(v-model="addOutputData.target")
-      div(slot="footer")
-        el-button(type="default" @click="isShowAddOutputDialog=false") 取消
-        el-button(type="primary" @click="handleSubmitAddOutput") 确定
+  el-dialog(title="添加输出规则" :visible.sync="isShowAddOutputDialog")
+    el-form(label-width="8em")
+      el-form-item(label="字段名")
+        el-input(v-model="addOutputData.name")
+      el-form-item(label="输出规则")
+        el-input(v-model="addOutputData.source")
+      el-form-item(label="输出目标")
+        el-input(v-model="addOutputData.targetType")
+      el-form-item(label="目标ID")
+        el-input(v-model="addOutputData.target")
+    div(slot="footer")
+      el-button(type="default" @click="isShowAddOutputDialog=false") 取消
+      el-button(type="primary" @click="handleSubmitAddOutput") 确定
 
-    el-drawer(title="选择数据定义" :visible.sync="isShowMockPickDialog")
+  el-drawer(title="选择数据定义" :visible.sync="isShowMockPickDialog")
       .mockListContainer
         .mockList
           .item(v-for="(i,n) in mockList" :key="n" @click="handlePickMock(i)")
@@ -101,7 +101,6 @@
         .extendContainer
           el-button(type="success" @click="handleAddNewMock") 为【{{addMockData.name}}】添加新规则
 
-  </div>
 </template>
 
 <script lang="ts">
@@ -229,7 +228,7 @@ export default class extends Vue {
     this.copyApiDetail[type] = [...this.copyApiDetail[type], ...newArr]
     this.actionDetail[type].splice(index, 1)
   }
-  handleSubmitAddAction() {
+  handleSubmitEdit() {
     this.$http
       .put(`/action/${this.actionDetail._id}`, this.actionDetail)
       .then(() => {

@@ -126,6 +126,7 @@ export default class extends Vue {
         return this.$http.delete(`/rule/${item._id}`)
       })
       .then(() => {
+        this.getList()
         this.$message({
           type: 'success',
           message: '删除成功!'

@@ -2,18 +2,18 @@
 .page.cardList
   el-card
     el-form(inline label-width="7em")
-      el-form-item(label="type")
+      el-form-item(label="字段名")
+        el-input(v-model="filter.name")
+      el-form-item(label="类型")
         el-select(v-model="filter.type")
           el-option(value="") 全部
           el-option(v-for="i in ['global', 'job', 'story', 'case', 'action']" :key="i" :value="i")
-      el-form-item(label="name")
-        el-input(v-model="filter.name")
-      el-form-item(label="targetId")
+      el-form-item(label="目标ID" v-if="filter.type!=='global'")
         el-input(v-model="filter.target")
     el-form(label-width="5em")
       el-form-item
-        el-button(type="primary" icon="el-icon-search" @click="handleSearch") search
-        el-button(type="success" icon="el-icon-plus" @click="handleAdd") add
+        el-button(type="primary" icon="el-icon-search" @click="handleSearch") 查询
+        el-button(type="success" icon="el-icon-plus" @click="handleAdd") 添加
 
   el-card.fullCard
     el-pagination(
@@ -36,8 +36,8 @@
               el-button(type="success" icon="el-icon-plus" @click="handleAddMockList(scoped.row)")
 
       el-table-column(label="id" prop="_id")
-      el-table-column(label="name" prop="name")
-      el-table-column(label="description" prop="description")
+      el-table-column(label="描述" prop="description")
+      el-table-column(label="字段名" prop="name")
       el-table-column(label="type" prop="type")
       el-table-column(label="target" prop="target")
       el-table-column(label="createAt" prop="createAt")
@@ -48,11 +48,11 @@
           el-button(type="warning" icon="el-icon-edit" circle @click="handleEdit(scoped.row)")
           el-button(type="danger" icon="el-icon-delete" circle @click="handleDelete(scoped.row)")
 
-  el-dialog(:title="editDialogData._id?'编辑':'添加'" :visible.sync="isShowEditDialog")
+  el-dialog(:title="editDialogData._id?'编辑':'添加'" :visible.sync="isShowEditDialog" :close-on-click-modal="false" :close-on-press-escape="false")
     el-form(label-width="6em")
       el-form-item(label="id" v-if="editDialogData._id")
         el-input(v-model="editDialogData._id" disabled)
-      el-form-item(label="名称*")
+      el-form-item(label="描述*")
         el-input(v-model="editDialogData.description")
       el-form-item(label="字段名*")
         el-input(v-model="editDialogData.name")
@@ -61,7 +61,7 @@
           el-option(v-for="i in ['global', 'job', 'story', 'case', 'action']" :key="i" :value="i")
       el-form-item(label="targetId" v-if="editDialogData.type!=='global'")
         el-input(v-model="editDialogData.target")
-      el-form-item(label="list")
+      el-form-item(label="可选的内容")
         el-button(type="info" style="max-width:120px; overflow: hidden;white-space: nowrap;text-overflow: ellipsis;" v-for="(i,n) in editDialogData.list" :key="n" @click="handleDeleteMockListItemInEditDialog(editDialogData,n)") {{i}}
         el-button(type="success" icon="el-icon-plus" @click="addMockList(editDialogData)")
     div(slot="footer")
@@ -84,7 +84,7 @@ export default class extends Vue {
     total: 100,
   }
   filter = {
-    type: '',
+    type: 'global',
     target: '',
     name: '',
   }
@@ -93,7 +93,7 @@ export default class extends Vue {
     _id: '',
     name: '',
     description: '',
-    type: '',
+    type: 'global',
     target: '',
     list: [],
   }
@@ -123,7 +123,7 @@ export default class extends Vue {
       _id: '',
       name: '',
       description: '',
-      type: '',
+      type: 'global',
       target: '',
       list: [],
     }

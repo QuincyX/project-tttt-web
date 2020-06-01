@@ -73,11 +73,11 @@
     el-form(label-width="6em")
       el-form-item(label="id" v-if="editDialogData._id")
         el-input(v-model="editDialogData._id" disabled)
-      el-form-item(label="name")
+      el-form-item(label="名称")
         el-input(v-model="editDialogData.name")
-      el-form-item(label="描述")
+      el-form-item(label="备注")
         el-input(v-model="editDialogData.description")
-      el-form-item(label="actionList")
+      el-form-item(label="动作列表")
         .actionList(v-if="$store.getters['action/pickedList'].length")
           .item(v-for="(i,n) in $store.getters['action/pickedList']" :key="n")
             .name {{n+1}}. {{i.name}}
@@ -287,9 +287,10 @@ export default class extends Vue {
       type: 'warning',
     })
       .then(() => {
-        return this.$http.delete(`/job/${item._id}`)
+        return this.$http.delete(`/case/${item._id}`)
       })
       .then(() => {
+        this.getList()
         this.$message({
           type: 'success',
           message: '删除成功!',

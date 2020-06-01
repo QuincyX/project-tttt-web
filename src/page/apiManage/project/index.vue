@@ -40,7 +40,7 @@
           el-button(type="warning" icon="el-icon-edit" circle @click="handleEdit(scoped.row)")
           el-button(type="danger" icon="el-icon-delete" circle @click="handleDelete(scoped.row)")
           el-button(type="primary" size="mini" round @click="handleAddGroup(scoped.row)") 添加分组
-          el-button(type="success" size="mini" round @click="handleRefresh(scoped.row)") 更新数据
+          el-button(type="success" size="mini" round @click="handleRefresh(scoped.row)" v-loading.fullscreen.lock="isLoading") 更新数据
 
   el-dialog(:title="'添加'" :visible.sync="isShowAddDialog")
     el-form(label-width="6em")
@@ -116,8 +116,12 @@ export default class extends Vue {
     description: '',
     project: ''
   }
+  isLoading: boolean = false
   handleRefresh(project: any) {
-    this.$http.put(`/project/${project._id}/refresh`)
+    const loading = this.$loading({ background: 'rgba(0, 0, 0, 0.7)' })
+    this.$http.put(`/project/${project._id}/refresh`).finally(() => {
+      loading.close()
+    })
   }
   handleSearch() {
     this.page.page = 1
@@ -161,6 +165,7 @@ export default class extends Vue {
         this.getList()
       })
       .then(() => {
+        this.getList()
         this.$message({
           type: 'success',
           message: '删除成功!'

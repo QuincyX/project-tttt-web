@@ -108,7 +108,10 @@ export default class extends Vue {
       })
   }
   mounted(): void {
-    this.filter.job = <string>this.$route.query.job || ''
+    if (this.$route.query.job) {
+      this.filter.job = <string>this.$route.query.job
+      this.page.size = 50
+    }
     this.getList()
   }
 }
