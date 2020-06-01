@@ -1,7 +1,7 @@
 <template lang="pug">
   .jwtwrap
     div.string.box
-      el-input.str(type="textarea" v-model="str")
+      el-input.str(type="textarea" v-model="str" @blur="handleToken")
     div.json.box
       el-input.str(type="textarea" v-model="json")
 </template>
@@ -17,25 +17,39 @@ export default class extends Vue {
   str: any = ''
   json: any = ''
   handleToken() {
-    const secret = 'token test' // 指定生成token密钥的字符串
-    const token = jwt.sign({ name: 'stone', age: 18 }, secret, {
-      expiresIn: 15,
-    }) // 传入元数据和密钥 并指定过期时间  单独数字是秒， 1h：一个小时  1d：一天
-    console.log(`token is ${token}`)
-    setTimeout(() => {
-      jwt.verify(token, secret, (err: any, decoded: any) => {
-        // 校验
-        if (err) {
-          console.log('token 已经失效')
-        } else {
-          console.log(`token data ${JSON.stringify(decoded)}`)
-        }
-      })
-    }, 6000)
+    const a = jwt.decode(this.str)
+    this.json = this.formatJson(JSON.stringify(a))
   }
-  mounted(): void {
-    this.handleToken()
+  formatJson(json: any) {
+    var outStr = '', //转换后的json字符串
+      padIdx = 0, //换行后是否增减PADDING的标识
+      space = '    ' //4个空格符
+    if (typeof json !== 'string') {
+      json = JSON.stringify(json)
+    }
+    json = json
+      .replace(/([\{\}\[\]])/g, '\r\n$1\r\n')
+      .replace(/(\,)/g, '$1\r\n')
+      .replace(/(\r\n\r\n)/g, '\r\n')
+    json.split('\r\n').forEach(function(node: any, index: any) {
+      var indent = 0,
+        padding = ''
+      if (node.match(/[\{\[]/)) {
+        indent = 1
+      } else if (node.match(/[\}\]]/)) {
+        padIdx = padIdx !== 0 ? --padIdx : padIdx
+      } else {
+        indent = 0
+      }
+      for (var i = 0; i < padIdx; i++) {
+        padding += space
+      }
+      outStr += padding + node + '\r\n'
+      padIdx += indent
+    })
+    return outStr
   }
+  mounted(): void {}
 }
 </script>
 
