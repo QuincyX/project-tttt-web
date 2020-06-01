@@ -17,6 +17,8 @@
           .header select api
           .list
             .item(v-for="(i,n) in apiList" :key="n" :class="{active:(currentApiId===i._id)}" @click="handleChangeApi(i)") {{i.name}}
+    .controlBar
+      i.el-icon-edit
 
   el-card(v-if="actionDetail.api")
     div(slot="header")
@@ -25,37 +27,36 @@
     el-form(label-width="8em" size="medium")
       el-form-item(label="请求地址") {{apiDetail.method.toUpperCase()}} http://{{baseUrl}}{{apiDetail.url}}
       el-form-item(label="请求参数")
-        el-tabs(v-model="activeName" type="card")
+        el-tabs(v-model="activeName" type="border-card")
           el-tab-pane(name="Header")
             span(slot='label') Header
               i {{" "+ apiDetail.header.length}}
             div.inputItem(v-for="(i,n) in apiDetail.header" :key="n")
+              .label {{i.name}}
               el-input(placeholder="请输入内容" v-model="i.value" class="input-with-select" @blur="queryValue(i.name,n,'header')")
-                el-button(slot="prepend" style = 'width:150px') {{i.name}}
                 el-button(slot="append" icon="el-icon-plus"  @click="handleAddMock(i,n,'header')")
-
           el-tab-pane(name="Body")
             span(slot='label') Body
             div.inputItem
               el-input(type="textarea" placeholder="请输入内容" :rows="10" v-model="subItem.body" class="input-with-select")
-                //- el-button(slot="append" icon="el-icon-plus"  @click="handleAddMock(i,n,'body')")
           el-tab-pane(name="Query")
             span(slot='label') Query
               i {{" "+ apiDetail.query.length}}
             div.inputItem(v-for="(i,n) in apiDetail.query" :key="n")
+              .label {{i.query}}
               el-input(placeholder="请输入内容" v-model="i.value" class="input-with-select" @blur="queryValue(i.name,n,'query')")
-                el-button(slot="prepend" style = 'width:150px') {{i.query}}
                 el-button(slot="append" icon="el-icon-plus"  @click="handleAddMock(i,n,'query')")
-
           el-tab-pane(name="Path")
             span(slot='label') Path
               i {{" "+ apiDetail.path.length}}
             div.inputItem(v-for="(i,n) in apiDetail.path" :key="n")
+              .label {{i.name}}
               el-input(placeholder="请输入内容" v-model="i.value" class="input-with-select" @blur="queryValue(i.name,n,'path')")
-                el-button(slot="prepend" style = 'width:150px') {{i.name}}
                 el-button(slot="append" icon="el-icon-plus"  @click="handleAddMock(i,n,'path')")
-      el-form-item(label="测试信息")
-        pre.respone {{responseData}}
+      el-form-item(label="Response")
+        pre {{responseData}}
+      el-form-item(label="Curl")
+        pre {{curlScript}}
   el-drawer(title="选择数据定义" :visible.sync="isShowMockPickDialog")
     .mockListContainer
       .mockList
@@ -92,6 +93,7 @@
 <script lang="ts">
 import { Vue, Component } from 'vue-property-decorator'
 import paramItem from '@/component/action/paramItem.vue'
+import { getCurlScript } from '@/util/index'
 
 @Component({
   components: { paramItem }
@@ -152,6 +154,7 @@ export default class extends Vue {
     target: '',
     list: []
   }
+  curlScript: string = ''
   pramList: any = ['header', 'body', 'query', 'path']
   get baseUrl(): string {
     const currentProject = this.projectList.find(
@@ -236,7 +239,12 @@ export default class extends Vue {
       body: bodyRaw
     })
       .then((res: any) => {
-        this.responseData = res
+        this.responseData = res.data
+        this.curlScript = getCurlScript(res)
+      })
+      .catch((err: any) => {
+        this.responseData = err
+        this.curlScript = getCurlScript(err)
       })
       .finally(() => {
         this.isApiLoading = false
@@ -331,6 +339,12 @@ export default class extends Vue {
 }
 .inputItem {
   margin: 10px 0;
+  display: flex;
+  .label {
+    text-align: right;
+    padding-right: 15px;
+    width: 150px;
+  }
 }
 .mockListContainer {
   display: flex;
@@ -373,15 +387,6 @@ export default class extends Vue {
     .padding;
     .center;
   }
-}
-.respone {
-  padding: 5px;
-  border: 1px solid #7e5db2;
-  border-radius: 5px;
-  min-height: 50px;
-}
-.token {
-  display: flex;
 }
 .paramListContainer {
   display: flex;

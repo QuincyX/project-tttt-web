@@ -52,3 +52,25 @@ function colorLog(val: any) {
     'background: #1e90ff;color: white;padding:3px 12px;border-radius:0 20px 20px 0;'
   )
 }
+
+export function getCurlScript(payload: any) {
+  if (payload) {
+    const headers = payload?.config?.headers || {}
+    let curl = `curl -X ${payload?.config?.method.toUpperCase()} `
+    curl += `'${payload?.config?.baseURL}${payload?.config?.url}' `
+    for (let i in headers) {
+      if (i.toLowerCase() !== 'content-length') {
+        curl += `-H '${i}: ${headers[i]}' `
+      }
+    }
+    if (
+      payload?.config?.method === 'post' ||
+      payload?.config?.method === 'put'
+    ) {
+      curl += `-d '${JSON.stringify(payload?.config?.data)}'`
+    }
+    return curl
+  } else {
+    return ``
+  }
+}
