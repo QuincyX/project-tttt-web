@@ -62,9 +62,12 @@ export default class extends Vue {
 
 <style lang="less" scoped>
 .jwtwrap {
-  min-height: 600px;
+  height: calc(100vh - 92px);
+  overflow: hidden;
   padding: 20px;
   min-width: 900px;
+  max-width: 1100px;
+  margin: auto;
 }
 .box {
   border-radius: 5px;
