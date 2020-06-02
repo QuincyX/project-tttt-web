@@ -1,9 +1,11 @@
 <template lang="pug">
   .jwtwrap
     div.string.box
-      el-input.str(type="textarea" v-model="str" @blur="handleToken")
+      textarea.str( v-model="str" placeholder="请输入你要解析的内容")
+      div(style="display:flex; justify-content:flex-end;padding:10px;")
+       el-button(type="success"  @click="handleToken") 生成json
     div.json.box
-      el-input.str(type="textarea" v-model="json")
+      textarea.str( v-model="json" placeholder="解析后的json" disabled)
 </template>
 
 <script lang="ts">
@@ -49,42 +51,51 @@ export default class extends Vue {
     })
     return outStr
   }
-  mounted(): void {}
+  foo: any = 1
+
+  mounted(): void {
+    ;({ baz: this.foo } = { baz: 12 })
+    console.log(this.foo)
+  }
 }
 </script>
 
 <style lang="less" scoped>
 .jwtwrap {
-  display: flex;
-  justify-content: center;
-  .box {
-    border-radius: 5px;
-    box-shadow: 0 0 5px #666;
-    background: rgba(68, 28, 73, 0.808);
-    color: #fff;
-  }
+  min-height: 600px;
+  padding: 20px;
+  min-width: 900px;
+}
+.box {
+  border-radius: 5px;
+  box-shadow: inset 0 0 15px #c592ff;
+  background: rgba(47, 3, 77, 0.6);
+  overflow: auto;
+  margin: 15px 10px;
+  box-sizing: border-box;
+  padding: 20px;
 }
 .string {
-  width: 50%;
-  height: 600px;
-  overflow: auto;
-  background: #fff;
-  margin: 15px 10px;
+  float: left;
+  width: 60%;
 }
 .json {
-  width: 40%;
-  height: 600px;
-  overflow: auto;
-  background: #fff;
-  margin: 15px 10px;
+  float: right;
+  width: 35%;
+  min-width: 250px;
+  .str {
+    min-height: 350px;
+  }
 }
 .str {
+  min-height: 300px;
   width: 100%;
-  height: 600px;
-  display: flex;
-  textarea {
-    height: 600px;
-    flex: 1;
-  }
+  resize: none;
+  background: rgba(0, 0, 0, 0.5);
+  outline: none;
+  border: 1px solid #c592ff;
+  border-radius: 8px;
+  padding: 8px;
+  color: #c592ff;
 }
 </style>
