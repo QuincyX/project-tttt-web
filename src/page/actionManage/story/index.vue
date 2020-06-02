@@ -35,7 +35,7 @@
                   .name {{n+1}}. {{i.name}}
                   .description 描述：{{i.description}}
                   .description 动作：
-                    el-button(type="warning" plain size="mini" v-for="(action,actionIndex) in i.actionList") {{action.name}}
+                    el-button(type="warning" plain size="mini" v-for="(action,actionIndex) in i.actionList") {{action}}
       el-table-column(label="id" prop="_id")
       el-table-column(label="name" prop="name")
       el-table-column(label="description" prop="description")
@@ -85,18 +85,18 @@
 import { Vue, Component } from 'vue-property-decorator'
 
 @Component({
-  components: {}
+  components: {},
 })
 export default class extends Vue {
   list = []
   page = {
     page: 1,
     size: 10,
-    total: 100
+    total: 100,
   }
   filter = {
     type: '',
-    name: ''
+    name: '',
   }
   isShowEditDialog: boolean = false
   editDialogData: any = {
@@ -104,7 +104,7 @@ export default class extends Vue {
     name: '',
     description: '',
     caseList: [],
-    type: '单例'
+    type: '单例',
   }
   handleAdd() {
     this.editDialogData._id = ''
@@ -128,7 +128,7 @@ export default class extends Vue {
           caseList: this.$store.getters['case/pickedList'].map(
             (o: any) => o._id
           ),
-          type: '单例'
+          type: '单例',
         })
         .then((res) => {
           this.$store.commit('case/clearPickedList')
@@ -143,7 +143,7 @@ export default class extends Vue {
           caseList: this.$store.getters['case/pickedList'].map(
             (o: any) => o._id
           ),
-          type: '单例'
+          type: '单例',
         })
         .then((res) => {
           this.$store.commit('case/clearPickedList')
@@ -155,16 +155,16 @@ export default class extends Vue {
   handleTriggerStory(item: any) {
     this.$prompt('请输入任务备注', '提示', {
       confirmButtonText: '确定',
-      cancelButtonText: '取消'
+      cancelButtonText: '取消',
     })
       .then(({ value }: any) => {
         return this.$http.post('/job', {
           name: `【${item.name}】的执行任务`,
           description: value,
-          targetType:"story",
+          targetType: 'story',
           targetId: item._id,
           trigger: '手动',
-          type: '单次'
+          type: '单次',
         })
       })
       .then(() => {
@@ -173,7 +173,7 @@ export default class extends Vue {
   }
   handleDelete(item: any) {
     this.$confirm('此操作将永久删除该数据, 是否继续?', '提示', {
-      type: 'warning'
+      type: 'warning',
     })
       .then(() => {
         return this.$http.delete(`/job/${item._id}`)
@@ -181,7 +181,7 @@ export default class extends Vue {
       .then(() => {
         this.$message({
           type: 'success',
-          message: '删除成功!'
+          message: '删除成功!',
         })
       })
   }
@@ -202,7 +202,7 @@ export default class extends Vue {
   getList() {
     this.$http
       .get('/story', {
-        params: { ...this.page, ...this.filter, relate: true }
+        params: { ...this.page, ...this.filter, relate: true },
       })
       .then(({ page, list }: any) => {
         this.page = page
