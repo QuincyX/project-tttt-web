@@ -51,12 +51,7 @@ export default class extends Vue {
     })
     return outStr
   }
-  foo: any = 1
-
-  mounted(): void {
-    ;({ baz: this.foo } = { baz: 12 })
-    console.log(this.foo)
-  }
+  mounted(): void {}
 }
 </script>
 
