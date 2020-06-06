@@ -222,10 +222,9 @@ export default class extends Vue {
       })
   }
   get baseUrl(): string {
-    const currentProject = this.projectList.find(
-      (o) => o._id === this.currentProjectId
-    )
-    return currentProject.host
+    const currentProject =
+      this.projectList.find((o) => o._id === this.currentProjectId) || {}
+    return currentProject.host || ''
   }
 
   handleAddNewMock() {

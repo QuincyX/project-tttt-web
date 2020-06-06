@@ -7,7 +7,7 @@ const filters = {
    * @param {*} val 日期字符串、GMT时间、时间戳
    * @returns {String} yyyy-mm-dd
    */
-  formatDate: val => {
+  formatDate: (val) => {
     if (val) {
       if (typeof val === 'string') {
         val = val.replace(/-/g, '/')
@@ -26,7 +26,7 @@ const filters = {
       return '-'
     }
   },
-  formatYear: val => {
+  formatYear: (val) => {
     if (val) {
       if (typeof val === 'string') {
         val = val.replace(/-/g, '/')
@@ -42,7 +42,7 @@ const filters = {
    * @param {*} val 日期字符串、GMT时间、时间戳
    * @returns {String} yyyy-mm-dd hh:mm
    */
-  formatFullDate: val => {
+  formatFullDate: (val) => {
     if (val) {
       if (String(val).length === 10) {
         val = val * 1000
@@ -70,7 +70,7 @@ const filters = {
    * @param {*} val 时间戳
    * @returns {String} hh:mm:ss
    */
-  formatTime: val => {
+  formatTime: (val) => {
     if (val) {
       let theTime = parseInt(val)
       if (theTime < 0) {
@@ -103,7 +103,7 @@ const filters = {
    * @param {*} val 日期字符串、GMT时间、时间戳
    * @returns {Number} 年龄
    */
-  formatAge: val => {
+  formatAge: (val) => {
     if (val) {
       if (typeof val === 'string') {
         val = val.replace(/-/g, '/')
@@ -132,7 +132,7 @@ const filters = {
    * @param {String || Number} num 手机号
    * @returns {String} 截取后的手机号
    */
-  lockPhoneNumber: num => {
+  lockPhoneNumber: (num) => {
     let val = String(num)
     if (val && val.length === 11) {
       return (val = val.substr(0, 3) + '****' + val.substr(-4, 4))
@@ -191,7 +191,7 @@ const filters = {
    * @param {Number} val 数量
    * @returns {String}
    */
-  filterCount: val => {
+  filterCount: (val) => {
     if (!val || isNaN(val)) {
       if (typeof val === 'string') {
         return val
@@ -208,7 +208,7 @@ const filters = {
    * @param {String} val 七牛的key值
    * @returns {String}
    */
-  formatStaticUrl: val => {
+  formatStaticUrl: (val) => {
     if (val) {
       if (val.substring(0, 4) === 'http') {
         return val
@@ -267,7 +267,7 @@ const filters = {
    * @param {String} numb 手机号
    * @returns {String}
    */
-  phoneFilter: numb => {
+  phoneFilter: (numb) => {
     let num = numb.toString()
     if (num === '') return
     return num.replace(/^(.{3})(.*)(.{4})$/, '$1 $2 $3')
@@ -277,7 +277,7 @@ const filters = {
    * @param {Number} index 传入对应的性别下标
    * @return:
    */
-  filterGender: index => {
+  filterGender: (index) => {
     const list = [
       '外星人',
       '女性',
@@ -292,17 +292,20 @@ const filters = {
     ]
     return list[index]
   },
-  formatExamineStatus: val => {
+  formatExamineStatus: (val) => {
     const list = ['审核中', '已通过', '已违规']
     return list[val]
   },
-  formatShareType: val => {
+  formatShareType: (val) => {
     const list = ['', '微信', '朋友圈', 'QQ', 'QQ空间', '微博', '复制链接']
     return list[val]
+  },
+  formatUiAssetUrl: (val) => {
+    return 'http://ui-asset.besmile.me/v1/' + val
   }
 }
 
-Object.keys(filters).forEach(key => {
+Object.keys(filters).forEach((key) => {
   Vue.filter(key, filters[key])
 })
 
