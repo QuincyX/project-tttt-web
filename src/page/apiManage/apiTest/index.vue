@@ -94,10 +94,10 @@
 <script lang="ts">
 import { Vue, Component, Watch } from 'vue-property-decorator'
 import paramItem from '@/component/action/paramItem.vue'
-import { getCurlScript } from '@/util/index'
+import { getCurlScript, log } from '@/util/index'
 
 @Component({
-  components: { paramItem },
+  components: { paramItem }
 })
 export default class extends Vue {
   projectList: any[] = []
@@ -117,7 +117,7 @@ export default class extends Vue {
     query: [],
     path: [],
     body: [],
-    header: [],
+    header: []
   }
   responseData: any = ''
   actionDetail: any = {
@@ -131,19 +131,19 @@ export default class extends Vue {
     body: <Array<any>>[],
     header: <Array<any>>[],
     rule: <Array<any>>[],
-    output: <Array<any>>[],
+    output: <Array<any>>[]
   }
   mockList: any[] = []
   isShowMockPickDialog: boolean = false
   addMockData: any = {
     name: '',
-    type: '',
+    type: ''
   }
   subItem: any = {
     query: {},
     path: {},
     body: `{\n  \n}`,
-    header: {},
+    header: {}
   }
   isShowEditDialog: boolean = false
   editDialogData: any = {
@@ -152,7 +152,7 @@ export default class extends Vue {
     description: '',
     type: 'global',
     target: '',
-    list: [],
+    list: []
   }
   curlScript: string = ''
   pramList: any = ['header', 'body', 'query', 'path']
@@ -168,11 +168,11 @@ export default class extends Vue {
     let _that = this
     this.$http
       .post(`/mock`, {
-        ...this.editDialogData,
+        ...this.editDialogData
       })
       .then((res) => {
         return this.$http.get('/mock', {
-          params: { size: 0, type: 'global', name: this.addMockData.name },
+          params: { size: 0, type: 'global', name: this.addMockData.name }
         })
       })
       .then((res: any) => {
@@ -183,7 +183,7 @@ export default class extends Vue {
   addMockList(item: any) {
     this.$prompt('请输入新的内容', '提示', {
       confirmButtonText: '确定',
-      cancelButtonText: '取消',
+      cancelButtonText: '取消'
     }).then(({ value }: any) => {
       if (value && value.trim().length) {
         this.editDialogData.list.push(value)
@@ -199,7 +199,7 @@ export default class extends Vue {
     )
     this.addMockData = {
       name: '',
-      type: '',
+      type: ''
     }
     this.isShowMockPickDialog = false
   }
@@ -209,7 +209,7 @@ export default class extends Vue {
   async handleAddMock(item: any, index: any, type: string) {
     this.addMockData = { name: item.name, type, index }
     this.mockList = await this.$http.get('/mock', {
-      params: { size: 0, type: 'global', name: item.name },
+      params: { size: 0, type: 'global', name: item.name }
     })
     this.isShowMockPickDialog = true
   }
@@ -226,6 +226,7 @@ export default class extends Vue {
         )
       }
     } catch (error) {
+      console.log(error);
       bodyRaw = ''
     }
     let url = this.apiDetail.url
@@ -236,9 +237,9 @@ export default class extends Vue {
     this.$curl({
       method: this.apiDetail.method,
       url: `http://${this.baseUrl}${url}`,
-      query: this.subItem.query,
+      params: this.subItem.query,
       headers: this.subItem.header,
-      body: bodyRaw,
+      data: bodyRaw
     })
       .then((res: any) => {
         this.responseData = res.data

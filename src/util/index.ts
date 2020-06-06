@@ -55,9 +55,21 @@ function colorLog(val: any) {
 
 export function getCurlScript(payload: any) {
   if (payload) {
+    console.log(payload?.config.params)
+
     const headers = payload?.config?.headers || {}
     let curl = `curl -X ${payload?.config?.method.toUpperCase()} `
-    curl += `'${payload?.config?.baseURL || ''}${payload?.config?.url}' `
+    let url = `${payload?.config?.baseURL || ''}${payload?.config?.url}`
+    if (payload?.config?.params) {
+      url += '?'
+      for (let i in payload?.config?.params) {
+        url += `${i}=${payload?.config?.params[i]}&`
+      }
+      if (url.substring(url.length - 1) === '&') {
+        url = url.substring(0, url.length - 1)
+      }
+    }
+    curl += `'${url}' `
     for (let i in headers) {
       if (i.toLowerCase() !== 'content-length') {
         curl += `-H '${i}: ${headers[i]}' `
